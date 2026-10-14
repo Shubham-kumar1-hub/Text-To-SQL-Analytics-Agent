@@ -20,3 +20,6 @@ psycopg2-binary==2.9.10
 
 # PostgreSQL vector support
 pgvector==0.3.6
+
+# Faker generates realistic fake names, emails, cities, dates
+faker==40.43.0
