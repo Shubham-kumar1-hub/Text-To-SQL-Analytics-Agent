@@ -1,0 +1,21 @@
+services:
+  db:
+    # Postgres 16 image that already includes pgvector (needed later)
+    image: pgvector/pgvector:pg16
+    container_name: text2sql_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # This database is created automatically on first start
+      POSTGRES_DB: ecommerce
+    ports:
+      # Host port 5434 -> container port 5432
+      - "5434:5432"
+    volumes:
+      # Keeps data between restarts
+      - pgdata:/var/lib/postgresql/data
+      # Any .sql file here runs once, when the database is first created
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+
+volumes:
+  pgdata:
