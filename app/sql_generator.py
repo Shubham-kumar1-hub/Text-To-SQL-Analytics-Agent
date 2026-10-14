@@ -9,6 +9,7 @@ from langchain_groq import ChatGroq
 
 from app.schema import get_schema_metadata
 from app.schema_context import format_schema_for_llm
+from app.sql_validator import validate_sql
 
 load_dotenv()
 
@@ -43,7 +44,10 @@ Rules:
 
     response = llm.invoke(prompt)
 
-    return response.content.strip()
+    # Validate the LLM output before returning it to the rest of the application.
+    generated_sql = response.content.strip()
+
+    return validate_sql(generated_sql)
 
 
 if __name__ == "__main__":
