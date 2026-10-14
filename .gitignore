@@ -1,0 +1,5 @@
+# Keep secrets and local files out of GitHub
+.venv/
+.env
+__pycache__/
+*.db

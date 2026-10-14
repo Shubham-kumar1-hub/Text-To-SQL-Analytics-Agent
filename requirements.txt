@@ -1,0 +1,22 @@
+# LangGraph workflow orchestration
+langgraph==0.2.60
+
+# LangChain + Groq LLM integration
+langchain==0.3.14
+langchain-groq==0.2.3
+
+# SQL parsing and validation
+sqlglot==26.0.1
+
+# Environment variables and secrets
+python-dotenv==1.0.1
+
+# Data processing
+pandas==2.2.3
+
+# Database connectivity
+SQLAlchemy==2.0.36
+psycopg2-binary==2.9.10
+
+# PostgreSQL vector support
+pgvector==0.3.6
