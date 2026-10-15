@@ -15,6 +15,13 @@ llm = ChatGroq(
 def generate_answer(question, sql_query, query_result):
     """ Creating a concise answer from the SQL query results. """
 
+    # Avoid asking the LLM to explain an empty result set.
+    if not query_result["rows"]:
+        return (
+            "I couldn't find any records that match your question. "
+            "Try different wording or broader filters."
+        )
+
     # default=str handles database values such as Decimal and dates.
     result_rows = json.dumps(query_result["rows"], default=str)
 

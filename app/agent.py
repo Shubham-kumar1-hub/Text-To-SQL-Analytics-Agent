@@ -148,8 +148,8 @@ def run_agent(question):
     )
 
 if __name__ == "__main__":
-    user_question = "Which 5 products have the highest price?"
-
+    #user_question = "Which 5 products have the highest price?"
+    user_question = "Show me products named Product That Does Not Exist"
     agent_response = run_agent(user_question)
 
     print("Question:")
