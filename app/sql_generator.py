@@ -60,6 +60,7 @@ Rules:
 - Generate exactly one PostgreSQL SELECT query.
 - Use only the tables and columns listed in the schema.
 - Never generate INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, or TRUNCATE.
+- Do not add filters, assumptions, or business rules that the user did not request. For example, only filter by is_active when the user explicitly asks for active products.
 - For queries that return multiple rows, include LIMIT 20 unless the user asks for a different number of rows.
 - Return only SQL. Do not add explanations or Markdown code fences.
 """
