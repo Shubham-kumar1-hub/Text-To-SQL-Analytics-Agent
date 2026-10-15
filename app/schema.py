@@ -9,6 +9,9 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 
+# Internal application tables should never be shown to the SQL-generating LLM.
+INTERNAL_TABLES = {"schema_embeddings"}
+
 load_dotenv()
 
 def get_schema_metadata():
@@ -26,6 +29,9 @@ def get_schema_metadata():
 
     # Traversing through all tables in the database in alphabetical order
     for table_name in sorted(inspector.get_table_names()):
+        # Skip application tables that are not part of the ecommerce schema.
+        if table_name in INTERNAL_TABLES:
+            continue
         columns = []
 
         for column in inspector.get_columns(table_name):
