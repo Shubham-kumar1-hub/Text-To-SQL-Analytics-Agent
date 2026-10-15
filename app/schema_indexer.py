@@ -34,7 +34,7 @@ def build_table_description(table_name, details):
 
         for foreign_key in details["foreign_keys"]:
             local_column = ", ".join(foreign_key["columns"])
-            referenced_column = ", ".join(foreign_key["references_column"])
+            referenced_column = ", ".join(foreign_key["references_columns"])
 
             lines.append(
                 f"- {local_column} references "
@@ -73,7 +73,7 @@ def index_schema():
                         table_name,
                         schema_text,
                         embedding,
-                        updated_at,
+                        updated_at
                     )
                     VALUES (
                         :table_name,
