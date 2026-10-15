@@ -7,8 +7,10 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
-from app.schema import get_schema_metadata
-from app.schema_context import format_schema_for_llm
+from app.schema_retriever import (
+    format_retrieved_schema,
+    retrieve_relevant_schema,
+)
 from app.sql_validator import validate_sql
 
 load_dotenv()
@@ -34,9 +36,14 @@ The previous SQL attempt failed with this error:
 Generate a corrected SQL query that fixes this error.
 """
 
-    # Reading the current database structure and formatting it for the LLM
-    database_Schema = get_schema_metadata()
-    schema_text = format_schema_for_llm(database_Schema)
+    # Retrieving only the tables most relevant to the user's question.
+    retrieved_tables = retrieve_relevant_schema(
+        question=question,
+        top_k=5,
+    )
+
+    # Converting the retrieved table descriptions into LLM ready text.
+    schema_text = format_retrieved_schema(retrieved_tables)
 
     prompt = f"""
 You are a PostgreSQL analytics assistant.
@@ -53,6 +60,7 @@ Rules:
 - Generate exactly one PostgreSQL SELECT query.
 - Use only the tables and columns listed in the schema.
 - Never generate INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, or TRUNCATE.
+- For queries that return multiple rows, include LIMIT 20 unless the user asks for a different number of rows.
 - Return only SQL. Do not add explanations or Markdown code fences.
 """
 
@@ -65,7 +73,7 @@ Rules:
 
 
 if __name__ == "__main__":
-    question = "Which 5 products have the highest price?"
+    question = "Which customers returned the most products?"
 
     sql_query = generate_sql(question)
 
