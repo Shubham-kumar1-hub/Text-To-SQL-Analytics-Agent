@@ -10,6 +10,26 @@ from sqlalchemy import create_engine, text
 from app.embeddings import create_embedding
 from app.schema import get_schema_metadata
 
+# Short business descriptions. It makes semantic retrieval more accurate.
+TABLE_PURPOSES = {
+    "customers": "Customer account details, signup dates, and loyalty tiers.",
+    "addresses": "Customer delivery addresses, cities, states, and postal codes.",
+    "categories": "Product categories and parent-child category hierarchy.",
+    "brands": "Product brand names and their countries.",
+    "suppliers": "Suppliers that provide products to the business.",
+    "products": "Products for sale, including selling price, cost, brand, and category.",
+    "inventory": "Current product stock quantities and reorder levels.",
+    "coupons": "Discount coupon codes, percentages, and validity periods.",
+    "orders": "Customer purchase orders, order dates, delivery addresses, and statuses.",
+    "order_items": "Individual products, quantities, and prices inside each order.",
+    "order_coupons": "Discount coupons applied to customer orders.",
+    "payments": "Order payment amounts, methods, paid dates, and payment statuses.",
+    "shipments": "Order shipping carriers, shipment dates, delivery dates, and tracking numbers.",
+    "reviews": "Customer product ratings, comments, and review dates.",
+    "returns": "Customer product returns, return reasons, and refunded amounts.",
+}
+
+
 load_dotenv()
 
 def build_table_description(table_name, details):
@@ -17,7 +37,8 @@ def build_table_description(table_name, details):
 
     lines = [
         f"Table name: {table_name}",
-        "columns:",
+        f"Business meaning: {TABLE_PURPOSES[table_name]}",
+        "Columns:",
     ]
 
     # Adding every column name and type.
