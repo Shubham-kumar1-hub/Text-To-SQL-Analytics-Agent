@@ -1,5 +1,5 @@
 """
-Generates a PostgreSQL SELECT query from a user's plain-English question.
+Generates a PostgreSQL SELECT query from a user's plain English question.
 """
 
 import os
@@ -19,8 +19,20 @@ llm = ChatGroq(
     temperature=0,
 )
 
-def generate_sql(question):
+def generate_sql(question, error_message=None):
     """Generates a SQL query based on the user's question and the database schema."""
+    # This stays empyt during the first attempt.
+    # On a retry, it tells the LLM why the previous query failed.
+
+    error_context = ""
+
+    if error_message:
+        error_context = f"""
+The previous SQL attempt failed with this error:
+{error_message}
+
+Generate a corrected SQL query that fixes this error.
+"""
 
     # Reading the current database structure and formatting it for the LLM
     database_Schema = get_schema_metadata()
@@ -32,6 +44,8 @@ You are a PostgreSQL analytics assistant.
 Use the database schema below to answer the user's question.
 
 {schema_text}
+
+{error_context}
 
 User question: {question}
 
