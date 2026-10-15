@@ -27,9 +27,12 @@ def check_question(question):
 You help decide whether an ecommerce analytics question is ready for SQL.
 
 A question is ambiguous when it does not specify an important metric,
-time period, comparison, or meaning. For example, "What are the best 
+time period, comparison, or meaning. For example, "What are the best
 products?" is ambiguous because "best" could mean highest sales,
 highest profit, highest rating, or something else.
+
+If a question does not mention a time period, assume the user means all
+available data. Do not mark a question ambiguous only because it has no date range.
 
 Return exactly one of these formats:
 
@@ -63,6 +66,7 @@ if __name__ == "__main__":
     test_questions = [
         "Which 5 products have the highest price?",
         "What are the best products?",
+        "Which customers returned the most products?",
     ]
 
     for question in test_questions:
