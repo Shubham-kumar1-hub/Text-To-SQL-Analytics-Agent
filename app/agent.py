@@ -189,9 +189,9 @@ def run_agent(question):
     )
 
 if __name__ == "__main__":
-    #user_question = "Which 5 products have the highest price?"
+    user_question = "Which customers returned the most products?"
     #user_question = "Show me products named Product That Does Not Exist"
-    user_question = "What are the best products?"   # testing the ambiguity path.
+    #user_question = "What are the best products?"   # testing the ambiguity path.
 
     agent_response = run_agent(user_question)
 
