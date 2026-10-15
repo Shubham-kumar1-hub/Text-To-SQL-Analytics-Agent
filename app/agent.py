@@ -10,6 +10,7 @@ from langgraph.graph import START, END, StateGraph
 from app.sql_executor import execute_sql
 from app.sql_generator import generate_sql
 from app.answer_generator import generate_answer
+from app.question_checker import check_question
 
 # The agent gets at most two SQL- generation attempts.
 MAX_SQL_ATTEMPTS = 2
@@ -19,11 +20,37 @@ class AgentState(TypedDict):
     """ Data passed between LangGraph nodes."""
 
     question: str
+    is_clear: bool
+    clarification: str
     sql: str
     result: dict
     answer: str
     error: str
     attempts: int
+
+def check_question_node(state):
+    """ Check whether the user must clarify their question first."""
+
+    question_check = check_question(state["question"])
+
+    return {
+        "is_clear": question_check["is_clear"],
+        "clarification": question_check["clarification"],
+    }
+
+def decide_after_question_check(state):
+    """ Route clear question to SQL generation, otherwise ask for clarification."""
+
+    if state["is_clear"]:
+        return "generate_sql"
+
+    return "generate_clarification"
+
+def generate_clarification_node(state):
+    """Return the clarification question without generating or running SQL."""
+
+    return {"answer": state["clarification"]}
+
 
 def generate_sql_node(state):
     """Generate Validatd SQL using an error message if this is a retry."""
@@ -91,13 +118,27 @@ def decide_next_setps(state):
 
 workflow = StateGraph(AgentState)
 
+
+workflow.add_node("check_question", check_question_node)
+workflow.add_node("generate_clarification", generate_clarification_node)
 workflow.add_node("generate_sql", generate_sql_node)
 workflow.add_node("execute_sql", execute_sql_node)
 workflow.add_node("generate_answer", generate_answer_node)
 workflow.add_node("generate_error_answer", generate_error_answer_node)
 
 
-workflow.add_edge(START, "generate_sql")
+workflow.add_edge(START, "check_question")
+
+workflow.add_conditional_edges(
+    "check_question",
+    decide_after_question_check,
+    {
+        "generate_sql": "generate_sql",
+        "generate_clarification": "generate_clarification",
+    },
+)
+
+workflow.add_edge("generate_clarification", END)
 workflow.add_edge("generate_sql", "execute_sql")
 
 # After execution, we decide wheteher to retry SQL generation or generate an error answer.
@@ -149,21 +190,24 @@ def run_agent(question):
 
 if __name__ == "__main__":
     #user_question = "Which 5 products have the highest price?"
-    user_question = "Show me products named Product That Does Not Exist"
+    #user_question = "Show me products named Product That Does Not Exist"
+    user_question = "What are the best products?"   # testing the ambiguity path.
+
     agent_response = run_agent(user_question)
 
     print("Question:")
     print(agent_response["question"])
 
-    print("\nGenerated SQL:")
-    print(agent_response["sql"])
+    if "sql" in agent_response:
+        print("\nGenerated SQL:")
+        print(agent_response["sql"])
 
     if "result" in agent_response:
         print("\nResults:")
         for row in agent_response["result"]["rows"]:
             print(row)
 
-    print("\nPlain-English Answer:")
+    print("\nAgent Response:")
     print(agent_response["answer"])
 
     print("\nSQL attempts:")
