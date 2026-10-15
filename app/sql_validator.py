@@ -28,7 +28,20 @@ def validate_sql(sql_query):
     allowed_query_types = (exp.Select, exp.Union)
 
     if not isinstance(statement, allowed_query_types):
-        raise ValueError("Only read-only SELECT queries are allowed.")
+        raise ValueError("Only read only SELECT queries are allowed.")
+
+    unsafe_expressions_types = (
+        exp.Insert,
+        exp.Update,
+        exp.Delete,
+        exp.Into,
+    )
+
+    if any(
+        statement.find(expression_type) is not None
+        for expression_type in unsafe_expressions_types
+    ):
+        raise ValueError("Data changing SQL is not allowed.")
 
     return statement.sql(dialect="postgres")
 
