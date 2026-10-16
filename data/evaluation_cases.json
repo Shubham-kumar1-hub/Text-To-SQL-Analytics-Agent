@@ -1,0 +1,27 @@
+[
+    {
+        "id": "count_customers",
+        "question": "How many customers are there?",
+        "reference_sql": "SELECT COUNT(*) AS customer_count FROM customers"
+    },
+    {
+        "id": "count_delivered_orders",
+        "question": "How many orders have been delivered?",
+        "reference_sql": "SELECT COUNT(*) AS delivered_order_count FROM orders WHERE status = 'delivered'"
+    },
+    {
+        "id": "top_five_expensive_products",
+        "question": "Which 5 products have the highest price?",
+        "reference_sql": "SELECT product_id, name, price FROM products ORDER BY price DESC LIMIT 5"
+    },
+    {
+        "id": "count_paid_payments",
+        "question": "How many payments have been successfully paid?",
+        "reference_sql": "SELECT COUNT(*) AS paid_payment_count FROM payments WHERE payment_status = 'paid'"
+    },
+    {
+        "id": "top_five_low_stock_products",
+        "question": "Which 5 products have the lowest stock quantity?",
+        "reference_sql": "SELECT p.product_id, p.name, i.stock_quantity FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id ORDER BY i.stock_quantity ASC LIMIT 5"
+    }
+]
