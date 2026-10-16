@@ -4,6 +4,7 @@ Measuring execution accuracy by comparing agent results with trusted SQL results
 
 import json
 from pathlib import Path
+from datetime import datetime
 
 from app.agent import run_agent
 from app.sql_executor import execute_sql
@@ -14,6 +15,12 @@ EVALUATION_FILE = (
     Path(__file__).resolve().parent.parent
     / "data"
     / "evaluation_cases.json"
+)
+
+RESULTS_FILE = (
+    Path(__file__).resolve().parent.parent
+    / "data"
+    / "evaluation_results.json"
 )
 
 def normalize_rows(rows):
@@ -78,7 +85,21 @@ def run_evaluation():
     print("\n" + "=" * 40)
     print(f"Execution accuracy: {passed_cases}/{total_cases} ({accuracy:.1f}%)")
 
-    return results
+    # Save a report that can later be displayed in the API and frontend.
+    report = {
+        "evaluated_at": datetime.now().astimezone().isoformat(),
+        "passed_cases": passed_cases,
+        "total_cases": total_cases,
+        "execution_accuracy_percent": accuracy,
+        "results": results,
+    }
+
+    with open(RESULTS_FILE, "w", encoding="utf-8") as file:
+        json.dump(report, file, indent=2, default=str)
+
+    print(f"Saved evaluation report: {RESULTS_FILE}")
+
+    return report
 
 
 if __name__ == "__main__":
