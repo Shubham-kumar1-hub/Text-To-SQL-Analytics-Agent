@@ -3,14 +3,24 @@ Streamlit frontend for the Text-to-SQL analytics agent.
 """
 
 # python -m streamlit run frontend/streamlit_app.py
+# http://127.0.0.1:8501
+
+import os
 
 import requests
 import streamlit as st
 
 
-# FastAPI runs locally on port 8000.
-API_URL = "http://127.0.0.1:8000/query"
-METRICS_URL = "http://127.0.0.1:8000/metrics"
+# Defaults work locally. Docker Compose overrides these values.
+API_URL = os.getenv(
+    "API_URL",
+    "http://127.0.0.1:8000/query",
+)
+
+METRICS_URL = os.getenv(
+    "METRICS_URL",
+    "http://127.0.0.1:8000/metrics",
+)
 
 @st.cache_data(ttl=60)
 def get_metrics():
