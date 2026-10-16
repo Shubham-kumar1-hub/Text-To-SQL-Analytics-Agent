@@ -46,10 +46,10 @@ def retrieve_relevant_schema(question, top_k=5):
     Finding the top 5 schema description most relevant to the user's question
     """
 
-    database_url = os.getenv("DATABASE_URL")
+    database_url = os.getenv("READONLY_DATABASE_URL")
 
     if not database_url:
-        raise ValueError("DATABASE_URL environment variable is not set.")
+        raise ValueError("READONLY_DATABASE_URL environment variable is not set.")
 
     # Creating an embedding for the user's question
     question_embedding = create_embedding(question)

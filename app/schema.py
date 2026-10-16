@@ -17,10 +17,10 @@ load_dotenv()
 def get_schema_metadata():
     """ Returns tables, columns, primary keys, and foreign-key relationships for the database. """
 
-    database_url = os.getenv("DATABASE_URL")
+    database_url = os.getenv("READONLY_DATABASE_URL")
 
     if not database_url:
-        raise ValueError("DATABASE_URL environment variable is not set.")
+        raise ValueError("READONLY_DATABASE_URL environment variable is not set.")
 
     engine = create_engine(database_url)
     inspector = inspect(engine)

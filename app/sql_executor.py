@@ -24,10 +24,10 @@ def execute_sql(sql_query):
     Returns column names, result rows, and whether the row limit was reached.
     """
 
-    database_url = os.getenv("DATABASE_URL")
+    database_url = os.getenv("READONLY_DATABASE_URL")
 
     if not database_url:
-        raise ValueError("DATABASE_URL environment variable is not set.")
+        raise ValueError("READONLY_DATABASE_URL environment variable is not set.")
 
 
     validated_sql = validate_sql(sql_query)
