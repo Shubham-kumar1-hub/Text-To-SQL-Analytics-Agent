@@ -61,7 +61,10 @@ if st.button("Ask question", type="primary"):
 
                 # Ambiguous questions intentionally do not generate SQL.
                 if data["needs_clarification"]:
-                    st.info("Please answer the clarification question above.")
+                    st.info(
+                        "Please submit a revised question that includes this detail. "
+                        "For example: Which customers returned the highest number of items?"
+                    )
 
                 else:
                     if data["rows"]:
