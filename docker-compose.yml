@@ -1,21 +1,47 @@
 services:
   db:
-    # Postgres 16 image that already includes pgvector (needed later)
     image: pgvector/pgvector:pg16
     container_name: text2sql_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      # This database is created automatically on first start
       POSTGRES_DB: ecommerce
     ports:
-      # Host port 5434 -> container port 5432
       - "5434:5432"
     volumes:
-      # Keeps data between restarts
       - pgdata:/var/lib/postgresql/data
-      # Any .sql file here runs once, when the database is first created
       - ./scripts/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d ecommerce" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    image: text2sql-api:local
+    container_name: text2sql_api
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      READONLY_DATABASE_URL: postgresql+psycopg2://analytics_reader:${READONLY_DB_PASSWORD}@db:5432/ecommerce
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: .
+    image: text2sql-api:local
+    container_name: text2sql_frontend
+    command: [ "python", "-m", "streamlit", "run", "frontend/streamlit_app.py", "--server.address", "0.0.0.0", "--server.port", "8501" ]
+    environment:
+      API_URL: http://api:8000/query
+      METRICS_URL: http://api:8000/metrics
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
 
 volumes:
   pgdata:
