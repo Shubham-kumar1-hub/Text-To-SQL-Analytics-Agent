@@ -20,10 +20,17 @@ TABLE_PURPOSES = {
     "products": "Products for sale, including selling price, cost, brand, and category.",
     "inventory": "Current product stock quantities and reorder levels.",
     "coupons": "Discount coupon codes, percentages, and validity periods.",
-    "orders": "Customer purchase orders, order dates, delivery addresses, and statuses.",
+    "orders": (
+    "Customer purchase orders, order dates, delivery addresses, and statuses. "
+    "status uses lowercase values: placed, shipped, delivered, and cancelled."
+    ),
     "order_items": "Individual products, quantities, and prices inside each order.",
     "order_coupons": "Discount coupons applied to customer orders.",
-    "payments": "Order payment amounts, methods, paid dates, and payment statuses.",
+    "payments": (
+    "Order payment amounts, methods, paid dates, and payment statuses. "
+    "payment_status uses lowercase values: paid for successful payments, "
+    "failed, and refunded."
+    ),
     "shipments": "Order shipping carriers, shipment dates, delivery dates, and tracking numbers.",
     "reviews": "Customer product ratings, comments, and review dates.",
     "returns": "Customer product returns, return reasons, and refunded amounts.",
