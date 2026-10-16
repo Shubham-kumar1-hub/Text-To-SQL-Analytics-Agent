@@ -17,13 +17,12 @@ EVALUATION_FILE = (
 )
 
 def normalize_rows(rows):
-    """ Converting database values into comparable JSON safe text."""
+    """Comparing result values while ignoring SQL column aliases."""
 
-    return json.dumps(
-        rows,
-        default=str,
-        sort_keys=True,
-    )
+    return [
+        tuple(str(value) for value in row.values())
+        for row in rows
+    ]
 
 def evaluate_case(case):
     """Running one question and comparing agent output with trusted SQL output."""
@@ -43,6 +42,7 @@ def evaluate_case(case):
         "question": case["question"],
         "is_correct": is_correct,
         "generated_sql": agent_response.get("sql"),
+        "agent_answer": agent_response["answer"],
         "expected_rows": expected_rows,
         "actual_rows": actual_rows,
     }
@@ -65,6 +65,7 @@ def run_evaluation():
         status = "PASS" if result["is_correct"] else "FAIL"
         print(f"{status}: {case['question']}")
         print("Generated SQL:", result["generated_sql"])
+        print("Agent Answer:", result["agent_answer"])
 
     passed_cases = sum(
         result["is_correct"]
