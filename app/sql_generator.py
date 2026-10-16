@@ -74,7 +74,7 @@ Rules:
 
 
 if __name__ == "__main__":
-    question = "Which customers returned the most products?"
+    question = "How many payments have been successfully paid?"
 
     sql_query = generate_sql(question)
 
