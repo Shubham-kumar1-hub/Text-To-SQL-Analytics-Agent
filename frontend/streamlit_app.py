@@ -2,12 +2,28 @@
 Streamlit frontend for the Text-to-SQL analytics agent.
 """
 
+# python -m streamlit run frontend/streamlit_app.py
+
 import requests
 import streamlit as st
 
 
 # FastAPI runs locally on port 8000.
 API_URL = "http://127.0.0.1:8000/query"
+METRICS_URL = "http://127.0.0.1:8000/metrics"
+
+@st.cache_data(ttl=60)
+def get_metrics():
+    """Fetch the latest evaluation metrics from FastAPI."""
+
+    try:
+        response = requests.get(METRICS_URL, timeout=5)
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.RequestException:
+        return None
 
 st.set_page_config(
     page_title="Text-to-SQL Analytics Agent",
@@ -17,6 +33,24 @@ st.set_page_config(
 
 st.title("📊 Text-to-SQL Analytics Agent")
 st.caption("Ask ecommerce analytics questions in plain English.")
+
+metrics = get_metrics()
+
+if metrics:
+    metric_column, case_column = st.columns(2)
+
+    metric_column.metric(
+        "Execution accuracy",
+        f"{metrics['execution_accuracy_percent']:.1f}%",
+    )
+
+    case_column.metric(
+        "Custom evaluation cases",
+        f"{metrics['passed_cases']}/{metrics['total_cases']}",
+    )
+
+    st.caption("Measured on the custom ecommerce evaluation set.")
+
 
 st.markdown(
     """
