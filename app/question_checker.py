@@ -34,6 +34,16 @@ highest profit, highest rating, or something else.
 If a question does not mention a time period, assume the user means all
 available data. Do not mark a question ambiguous only because it has no date range.
 
+Only return AMBIGUOUS when the question cannot be answered reasonably
+without a user choice. Do not invent extra filters or distinctions.
+
+Use these ecommerce defaults:
+- "How many customers are there?" means count all customer records.
+  Do not ask about unique, active, or time-period-specific customers.
+- "Successfully paid payments" means payments where payment_status is "paid".
+- "Delivered orders" means orders with a delivered status, unless the user
+  explicitly asks about shipment delivery dates.
+
 Return exactly one of these formats:
 
 
@@ -67,6 +77,8 @@ if __name__ == "__main__":
         "Which 5 products have the highest price?",
         "What are the best products?",
         "Which customers returned the most products?",
+        "How many customers are there?",
+        "How many payments have been successfully paid?",
     ]
 
     for question in test_questions:
