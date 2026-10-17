@@ -89,6 +89,7 @@ def execute_sql_node(state):
         # It will make sure that the agent do not crash immediately and first sends the error back to the SQL Generator.
         return {"error": str(error)}
 
+
 def generate_answer_node(state):
     """ Generate a plain English answer from the SQL results"""
 
@@ -99,6 +100,22 @@ def generate_answer_node(state):
     )
 
     return {"answer": plain_english_answer}
+
+def generate_error_answer_node(state):
+    """Return a safe message after every allowed SQL attempt has failed."""
+
+    # The real error goes to the server log only, never to the user
+    print(
+        f"[agent] gave up after {state['attempts']} attempts. "
+        f"Last error: {state['error']}"
+    )
+
+    return {
+        "answer": (
+            "I couldn't answer that question. Try rephrasing it, or ask "
+            "about the ecommerce data in a different way."
+        )
+    }
 
 def generate_error_answer_node(state):
     """ Returns  clear message after every allowed SQL attempt has failed."""

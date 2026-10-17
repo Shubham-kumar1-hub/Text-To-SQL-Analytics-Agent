@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-10-17T18:42:59.730428+05:30",
+  "evaluated_at": "2026-10-17T23:24:57.057897+05:30",
   "split": "dev",
   "passed_cases": 20,
   "total_cases": 20,
@@ -55,7 +55,7 @@
       "question": "What is the average product price, rounded to 2 decimal places?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT ROUND(CAST(AVG(price) AS DECIMAL), 2) AS average_price FROM products",
+      "generated_sql": "SELECT ROUND(AVG(price), 2) AS average_price FROM products",
       "agent_answer": "The average product price is **13263.89**.",
       "expected_rows": [
         {
@@ -77,7 +77,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT code FROM coupons WHERE discount_percent >= 15",
-      "agent_answer": "The coupon codes with a discount of\u202f15\u202fpercent or more are:\n\n- FESTIVE20  \n- SAVE15  \n- FLASH25",
+      "agent_answer": "The coupon codes with a discount of\u202f15\u202fpercent or higher are:\n\n- FESTIVE20  \n- SAVE15  \n- FLASH25",
       "expected_rows": [
         {
           "code": "FESTIVE20"
@@ -182,7 +182,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT DISTINCT b.name FROM brands AS b JOIN products AS p ON b.brand_id = p.brand_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Mobiles'",
-      "agent_answer": "Bolt, Kite, Terra, Vivo, Zenith",
+      "agent_answer": "The brands with products in the **Mobiles** category are:\n\n- Bolt  \n- Kite  \n- Terra  \n- Vivo  \n- Zenith",
       "expected_rows": [
         {
           "name": "Bolt"
@@ -226,8 +226,8 @@
       "question": "How many different gold loyalty tier customers have at least one cancelled order?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(DISTINCT c.customer_id) AS gold_customers_with_cancelled_orders FROM customers AS c JOIN orders AS o ON c.customer_id = o.customer_id WHERE c.loyalty_tier = 'gold' AND o.status = 'cancelled'",
-      "agent_answer": "There are **11** gold\u2011tier customers who have at least one cancelled order.",
+      "generated_sql": "SELECT COUNT(DISTINCT c.customer_id) FROM customers AS c JOIN orders AS o ON c.customer_id = o.customer_id WHERE c.loyalty_tier = 'gold' AND o.status = 'cancelled'",
+      "agent_answer": "There are **11** distinct gold\u2011tier customers who have at least one cancelled order.",
       "expected_rows": [
         {
           "count": 11
@@ -235,7 +235,7 @@
       ],
       "actual_rows": [
         {
-          "gold_customers_with_cancelled_orders": 11
+          "count": 11
         }
       ],
       "attempts": 1
@@ -248,7 +248,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT p.name FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id WHERE i.stock_quantity < i.reorder_level",
-      "agent_answer": "- Apex Denim Jacket  \n- Pulse Sneakers",
+      "agent_answer": "The products with stock below their reorder level are:\n\n- Apex Denim Jacket  \n- Pulse Sneakers",
       "expected_rows": [
         {
           "name": "Apex Denim Jacket"
@@ -275,7 +275,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT loyalty_tier AS tier, COUNT(*) AS count FROM customers GROUP BY loyalty_tier",
-      "agent_answer": "- Silver: 39 customers  \n- Bronze: 145 customers  \n- Gold: 16 customers",
+      "agent_answer": "**Customers by loyalty tier**\n\n| Tier   | Count |\n|--------|-------|\n| silver | 39 |\n| bronze | 145 |\n| gold   | 16 |",
       "expected_rows": [
         {
           "loyalty_tier": "silver",
@@ -314,7 +314,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT c.name AS category_name, ROUND(CAST(AVG(r.rating) AS DECIMAL), 2) AS average_rating FROM reviews AS r JOIN products AS p ON r.product_id = p.product_id JOIN categories AS c ON p.category_id = c.category_id GROUP BY c.name",
-      "agent_answer": "**Average Review Rating by Category**\n\n- Furniture: 4.16  \n- Women's Clothing: 3.98  \n- Footwear: 3.72  \n- Men's Clothing: 3.88  \n- Cookware: 3.96  \n- Laptops: 3.73  \n- Fitness Equipment: 3.74  \n- Books: 3.87  \n- Mobiles: 4.20  \n- Headphones: 3.75",
+      "agent_answer": "**Average review rating by category**\n\n- Furniture: 4.16  \n- Women's Clothing: 3.98  \n- Footwear: 3.72  \n- Men's Clothing: 3.88  \n- Cookware: 3.96  \n- Laptops: 3.73  \n- Fitness Equipment: 3.74  \n- Books: 3.87  \n- Mobiles: 4.20  \n- Headphones: 3.75",
       "expected_rows": [
         {
           "name": "Furniture",
@@ -409,7 +409,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT o.status, SUM(oi.quantity) AS total_quantity FROM orders AS o JOIN order_items AS oi ON o.order_id = oi.order_id GROUP BY o.status",
-      "agent_answer": "**Total quantity of items by order status**\n\n- shipped: 1,031  \n- cancelled: 759  \n- placed: 533  \n- delivered: 5,215",
+      "agent_answer": "**Total quantity of items by order status**\n\n| Status     | Total Quantity |\n|------------|----------------|\n| shipped    | 1,031 |\n| cancelled  | 759 |\n| placed     | 533 |\n| delivered  | 5,215 |",
       "expected_rows": [
         {
           "status": "shipped",
@@ -456,7 +456,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT method, COUNT(*) AS count FROM payments GROUP BY method",
-      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| card        | 366 |\n| cod         | 370 |\n| netbanking  | 369 |\n\nThese numbers represent the total number of payments made with each payment method.",
+      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| card        | 366 |\n| cod         | 370 |\n| netbanking  | 369 |",
       "expected_rows": [
         {
           "method": "upi",
@@ -587,7 +587,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": null,
-      "agent_answer": "What metric should be used to define \u201cperforms best\u201d (e.g., total sales, revenue, profit, number of orders, etc.)?",
+      "agent_answer": "What metric should be used to define \u201cperforms best\u201d (e.g., revenue, units sold, profit, conversion rate, etc.)?",
       "expected_rows": [],
       "actual_rows": [],
       "attempts": 0
@@ -613,7 +613,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT loyalty_tier, COUNT(*) AS customer_count FROM customers GROUP BY loyalty_tier ORDER BY customer_count DESC LIMIT 1",
-      "agent_answer": "The loyalty tier with the most customers is **bronze**, with 145 customers.",
+      "agent_answer": "The **bronze** loyalty tier has the most customers, with **145** customers.",
       "expected_rows": [
         {
           "loyalty_tier": "bronze"
@@ -635,7 +635,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT method FROM payments GROUP BY method ORDER BY COUNT(*) DESC LIMIT 1",
-      "agent_answer": "The most common payment method is **upi**.",
+      "agent_answer": "The most common payment method is **UPI**.",
       "expected_rows": [
         {
           "method": "upi"

@@ -1,16 +1,16 @@
 {
-  "evaluated_at": "2026-10-17T22:53:34.901939+05:30",
+  "evaluated_at": "2026-10-17T23:40:53.926826+05:30",
   "split": "challenge",
-  "passed_cases": 16,
+  "passed_cases": 15,
   "total_cases": 16,
-  "execution_accuracy_percent": 100.0,
+  "execution_accuracy_percent": 93.75,
   "by_tier": {
     "messy_phrasing": {
       "passed": 5,
       "total": 5
     },
     "value_traps": {
-      "passed": 5,
+      "passed": 4,
       "total": 5
     },
     "hard_sql": {
@@ -48,7 +48,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT product_id, name, price FROM products ORDER BY price DESC LIMIT 3",
-      "agent_answer": "Here are the three most expensive products:\n\n1. **Bolt Gaming Laptop** \u2013 99990.74  \n2. **Apex Student Laptop** \u2013 67338.11  \n3. **Vivo Smartphone 5G** \u2013 54079.12",
+      "agent_answer": "Here are the three most expensive products:\n\n1. **Bolt Gaming Laptop** \u2013\u202fprice: 99990.74  \n2. **Apex Student Laptop** \u2013\u202fprice: 67338.11  \n3. **Vivo Smartphone 5G** \u2013\u202fprice: 54079.12",
       "expected_rows": [
         {
           "name": "Bolt Gaming Laptop",
@@ -89,7 +89,7 @@
       "question": "what % of orders got canceled? round to 2 decimals",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT ROUND(100.0 * CAST(SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS DECIMAL) / CAST(COUNT(*) AS DECIMAL), 2) AS cancelled_percentage FROM orders",
+      "generated_sql": "SELECT ROUND(100.0 * SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) / COUNT(*), 2) AS cancelled_percentage FROM orders",
       "agent_answer": "The percentage of orders that were cancelled is **10.87\u202f%**.",
       "expected_rows": [
         {
@@ -110,7 +110,7 @@
       "question": "which brand has the most products",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT b.name AS brand_name, p.product_count FROM (SELECT brand_id, COUNT(*) AS product_count FROM products GROUP BY brand_id) AS p JOIN brands AS b ON b.brand_id = p.brand_id WHERE p.product_count = (SELECT MAX(product_count) FROM (SELECT COUNT(*) AS product_count FROM products GROUP BY brand_id) AS sub)",
+      "generated_sql": "SELECT b.name, COUNT(p.product_id) AS product_count FROM brands AS b JOIN products AS p ON b.brand_id = p.brand_id GROUP BY b.brand_id, b.name HAVING COUNT(p.product_id) = (SELECT MAX(cnt) FROM (SELECT COUNT(p2.product_id) AS cnt FROM brands AS b2 JOIN products AS p2 ON b2.brand_id = p2.brand_id GROUP BY b2.brand_id) AS sub)",
       "agent_answer": "The brand with the most products is **Pulse**, which has 11 products.",
       "expected_rows": [
         {
@@ -119,7 +119,7 @@
       ],
       "actual_rows": [
         {
-          "brand_name": "Pulse",
+          "name": "Pulse",
           "product_count": 11
         }
       ],
@@ -172,21 +172,13 @@
       "split": "challenge",
       "tier": "value_traps",
       "question": "total payment amount for net banking payments",
-      "is_correct": true,
-      "failure_reason": "",
-      "generated_sql": "SELECT SUM(amount) AS total_netbanking_amount FROM payments WHERE method = 'netbanking'",
-      "agent_answer": "The total amount paid via net\u2011banking is **24,680,760.43**.",
-      "expected_rows": [
-        {
-          "sum": "24680760.43"
-        }
-      ],
-      "actual_rows": [
-        {
-          "total_netbanking_amount": "24680760.43"
-        }
-      ],
-      "attempts": 1
+      "is_correct": false,
+      "failure_reason": "agent crashed: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m55gmyxae0bsrqbq0yd0h81m` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7396, Requested 842. Please try again in 1.785s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}",
+      "generated_sql": null,
+      "agent_answer": "",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
     },
     {
       "id": "c1_08",
@@ -196,7 +188,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT COUNT(*) FROM payments WHERE method = 'cod'",
-      "agent_answer": "There were **370** cash\u2011on\u2011delivery payments.",
+      "agent_answer": "There were **370** payments made using cash on delivery.",
       "expected_rows": [
         {
           "count": 370
@@ -217,7 +209,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT COUNT(*) AS blue_dart_shipments FROM shipments WHERE carrier = 'BlueDart'",
-      "agent_answer": "There were **335 shipments** that used Blue Dart as the carrier.",
+      "agent_answer": "There were **335 shipments** that went through Blue\u202fDart.",
       "expected_rows": [
         {
           "count": 335
@@ -238,7 +230,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT email FROM customers WHERE loyalty_tier = 'gold'",
-      "agent_answer": "user24@yahoo.com  \nuser33@yahoo.com  \nuser53@gmail.com  \nuser60@gmail.com  \nuser71@hotmail.com  \nuser86@gmail.com  \nuser96@hotmail.com  \nuser98@hotmail.com  \nuser109@gmail.com  \nuser127@yahoo.com  \nuser133@hotmail.com  \nuser150@hotmail.com  \nuser170@hotmail.com  \nuser182@hotmail.com  \nuser193@yahoo.com  \nuser198@yahoo.com",
+      "agent_answer": "Here are the email addresses of customers on the Gold plan:\n\n- user24@yahoo.com  \n- user33@yahoo.com  \n- user53@gmail.com  \n- user60@gmail.com  \n- user71@hotmail.com  \n- user86@gmail.com  \n- user96@hotmail.com  \n- user98@hotmail.com  \n- user109@gmail.com  \n- user127@yahoo.com  \n- user133@hotmail.com  \n- user150@hotmail.com  \n- user170@hotmail.com  \n- user182@hotmail.com  \n- user193@yahoo.com  \n- user198@yahoo.com",
       "expected_rows": [
         {
           "email": "user24@yahoo.com"
@@ -348,8 +340,8 @@
       "question": "What are the total sales for each top-level category, counting the sales of its sub-categories too? Sales is the sum of quantity times unit price from order items. Show the top-level category name and the total sales.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "WITH RECURSIVE cat_hierarchy AS (SELECT category_id, name, parent_category_id, category_id AS top_category_id, name AS top_name FROM categories WHERE parent_category_id IS NULL UNION ALL SELECT c.category_id, c.name, c.parent_category_id, ch.top_category_id, ch.top_name FROM categories AS c JOIN cat_hierarchy AS ch ON c.parent_category_id = ch.category_id) SELECT ch.top_name AS top_category, SUM(oi.quantity * oi.unit_price) AS total_sales FROM order_items AS oi JOIN products AS p ON oi.product_id = p.product_id JOIN cat_hierarchy AS ch ON p.category_id = ch.category_id GROUP BY ch.top_name ORDER BY ch.top_name",
-      "agent_answer": "**Total sales by top\u2011level category**\n\n- Books: 364250.54  \n- Electronics: 84479069.88  \n- Fashion: 5795763.52  \n- Home & Kitchen: 8498900.20  \n- Sports: 3287425.75  \n\nThese figures represent the sum of\u202f*quantity\u202f\u00d7\u202funit price* for all order items in each category, including sales from any sub\u2011categories.",
+      "generated_sql": "WITH RECURSIVE cat_hierarchy AS (SELECT category_id, name, parent_category_id, category_id AS root_id, name AS root_name FROM categories WHERE parent_category_id IS NULL UNION ALL SELECT c.category_id, c.name, c.parent_category_id, ch.root_id, ch.root_name FROM categories AS c JOIN cat_hierarchy AS ch ON c.parent_category_id = ch.category_id) SELECT ch.root_name AS top_level_category, SUM(oi.quantity * oi.unit_price) AS total_sales FROM order_items AS oi JOIN products AS p ON oi.product_id = p.product_id JOIN cat_hierarchy AS ch ON p.category_id = ch.category_id GROUP BY ch.root_name ORDER BY ch.root_name",
+      "agent_answer": "**Total sales by top\u2011level category**\n\n- Books:\u202f364,250.54  \n- Electronics:\u202f84,479,069.88  \n- Fashion:\u202f5,795,763.52  \n- Home & Kitchen:\u202f8,498,900.20  \n- Sports:\u202f3,287,425.75",
       "expected_rows": [
         {
           "coalesce": "Books",
@@ -374,27 +366,27 @@
       ],
       "actual_rows": [
         {
-          "top_category": "Books",
+          "top_level_category": "Books",
           "total_sales": "364250.54"
         },
         {
-          "top_category": "Electronics",
+          "top_level_category": "Electronics",
           "total_sales": "84479069.88"
         },
         {
-          "top_category": "Fashion",
+          "top_level_category": "Fashion",
           "total_sales": "5795763.52"
         },
         {
-          "top_category": "Home & Kitchen",
+          "top_level_category": "Home & Kitchen",
           "total_sales": "8498900.20"
         },
         {
-          "top_category": "Sports",
+          "top_level_category": "Sports",
           "total_sales": "3287425.75"
         }
       ],
-      "attempts": 1
+      "attempts": 2
     },
     {
       "id": "c2_02",
@@ -404,7 +396,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": "SELECT CAST(EXTRACT(MONTH FROM order_date) AS INT) AS month, COUNT(*) AS order_count FROM orders WHERE EXTRACT(YEAR FROM order_date) = 2026 GROUP BY month ORDER BY month",
-      "agent_answer": "**Orders in 2026 (by month)**  \n\n| Month | Orders |\n|-------|--------|\n| 1 | 115 |\n| 2 | 114 |\n| 3 | 115 |\n| 4 | 131 |\n| 5 | 110 |\n| 6 | 137 |\n| 7 | 138 |\n| 8 | 133 |\n| 9 | 118 |\n| 10 | 59 |\n\nOnly months 1\u201110 had orders; months 11 and 12 had none.",
+      "agent_answer": "**Orders placed in 2026 (months with at least one order)**  \n\n| Month | Order count |\n|-------|-------------|\n| 1 | 115 |\n| 2 | 114 |\n| 3 | 115 |\n| 4 | 131 |\n| 5 | 110 |\n| 6 | 137 |\n| 7 | 138 |\n| 8 | 133 |\n| 9 | 118 |\n| 10 | 59 |\n\nMonths 11 and 12 had no orders recorded.",
       "expected_rows": [
         {
           "extract": "2",
@@ -498,8 +490,8 @@
       "question": "For each product category, which product has the highest total sales, where sales is the sum of quantity times unit price from order items? Show the category name, the product name, and the total sales.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "WITH product_sales AS (SELECT p.product_id, p.name AS product_name, p.category_id, SUM(oi.quantity * oi.unit_price) AS total_sales FROM products AS p JOIN order_items AS oi ON p.product_id = oi.product_id GROUP BY p.product_id, p.name, p.category_id) SELECT c.name AS category_name, ps.product_name, ps.total_sales FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY total_sales DESC) AS rn FROM product_sales) AS ps JOIN categories AS c ON ps.category_id = c.category_id WHERE ps.rn = 1 ORDER BY c.name",
-      "agent_answer": "**Top\u2011selling product in each category**\n\n| Category | Product | Total Sales |\n|----------|---------|------------|\n| Books | Vivo Programming Book | 97148.07 |\n| Cookware | Zenith Pressure Cooker | 530337.78 |\n| Fitness Equipment | Nova Dumbbell Set | 867503.88 |\n| Footwear | Pulse Sneakers | 826680.75 |\n| Furniture | Urban Bookshelf | 1414041.30 |\n| Headphones | Bolt Wireless Earbuds | 1685526.70 |\n| Laptops | Bolt Gaming Laptop | 13998703.60 |\n| Men\u2019s Clothing | Pulse Slim Jeans | 304975.60 |\n| Mobiles | Vivo Smartphone 5G | 5840544.96 |\n| Women\u2019s Clothing | Pulse Kurti | 397323.20 |",
+      "generated_sql": "WITH product_sales AS (SELECT oi.product_id, SUM(oi.quantity * oi.unit_price) AS total_sales FROM order_items AS oi GROUP BY oi.product_id), ranked AS (SELECT c.name AS category_name, p.name AS product_name, ps.total_sales, ROW_NUMBER() OVER (PARTITION BY c.category_id ORDER BY ps.total_sales DESC) AS rn FROM product_sales AS ps JOIN products AS p ON p.product_id = ps.product_id JOIN categories AS c ON c.category_id = p.category_id) SELECT category_name, product_name, total_sales FROM ranked WHERE rn = 1",
+      "agent_answer": "**Top\u2011selling product by category**\n\n| Category | Product | Total Sales |\n|----------|---------|-------------|\n| Books | Vivo Programming Book | 97,148.07 |\n| Mobiles | Vivo Smartphone 5G | 5,840,544.96 |\n| Laptops | Bolt Gaming Laptop | 13,998,703.60 |\n| Headphones | Bolt Wireless Earbuds | 1,685,526.70 |\n| Men\u2019s Clothing | Pulse Slim Jeans | 304,975.60 |\n| Women\u2019s Clothing | Pulse Kurti | 397,323.20 |\n| Footwear | Pulse Sneakers | 826,680.75 |\n| Cookware | Zenith Pressure Cooker | 530,337.78 |\n| Furniture | Urban Bookshelf | 1,414,041.30 |\n| Fitness Equipment | Nova Dumbbell Set | 867,503.88 |",
       "expected_rows": [
         {
           "category_name": "Books",
@@ -559,29 +551,9 @@
           "total_sales": "97148.07"
         },
         {
-          "category_name": "Cookware",
-          "product_name": "Zenith Pressure Cooker",
-          "total_sales": "530337.78"
-        },
-        {
-          "category_name": "Fitness Equipment",
-          "product_name": "Nova Dumbbell Set",
-          "total_sales": "867503.88"
-        },
-        {
-          "category_name": "Footwear",
-          "product_name": "Pulse Sneakers",
-          "total_sales": "826680.75"
-        },
-        {
-          "category_name": "Furniture",
-          "product_name": "Urban Bookshelf",
-          "total_sales": "1414041.30"
-        },
-        {
-          "category_name": "Headphones",
-          "product_name": "Bolt Wireless Earbuds",
-          "total_sales": "1685526.70"
+          "category_name": "Mobiles",
+          "product_name": "Vivo Smartphone 5G",
+          "total_sales": "5840544.96"
         },
         {
           "category_name": "Laptops",
@@ -589,19 +561,39 @@
           "total_sales": "13998703.60"
         },
         {
+          "category_name": "Headphones",
+          "product_name": "Bolt Wireless Earbuds",
+          "total_sales": "1685526.70"
+        },
+        {
           "category_name": "Men's Clothing",
           "product_name": "Pulse Slim Jeans",
           "total_sales": "304975.60"
         },
         {
-          "category_name": "Mobiles",
-          "product_name": "Vivo Smartphone 5G",
-          "total_sales": "5840544.96"
-        },
-        {
           "category_name": "Women's Clothing",
           "product_name": "Pulse Kurti",
           "total_sales": "397323.20"
+        },
+        {
+          "category_name": "Footwear",
+          "product_name": "Pulse Sneakers",
+          "total_sales": "826680.75"
+        },
+        {
+          "category_name": "Cookware",
+          "product_name": "Zenith Pressure Cooker",
+          "total_sales": "530337.78"
+        },
+        {
+          "category_name": "Furniture",
+          "product_name": "Urban Bookshelf",
+          "total_sales": "1414041.30"
+        },
+        {
+          "category_name": "Fitness Equipment",
+          "product_name": "Nova Dumbbell Set",
+          "total_sales": "867503.88"
         }
       ],
       "attempts": 1
@@ -613,7 +605,7 @@
       "question": "What percentage of delivered orders had at least one returned item? Round to 2 decimal places.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT ROUND(100.0 * CAST(returned_cnt AS DECIMAL) / total_cnt, 2) AS percentage FROM (SELECT COUNT(*) AS total_cnt, COUNT(*) FILTER(WHERE has_return) AS returned_cnt FROM (SELECT o.order_id, EXISTS(SELECT 1 FROM order_items AS oi JOIN returns AS r ON r.order_item_id = oi.order_item_id WHERE oi.order_id = o.order_id) AS has_return FROM orders AS o WHERE o.status = 'delivered') AS sub) AS result",
+      "generated_sql": "SELECT ROUND((SELECT CAST(COUNT(DISTINCT o2.order_id) AS DECIMAL) FROM orders AS o2 JOIN order_items AS oi ON oi.order_id = o2.order_id JOIN returns AS r ON r.order_item_id = oi.order_item_id WHERE o2.status = 'delivered') / NULLIF((SELECT COUNT(DISTINCT o.order_id) FROM orders AS o WHERE o.status = 'delivered'), 0) * 100, 2) AS percentage",
       "agent_answer": "12.98% of delivered orders had at least one returned item.",
       "expected_rows": [
         {
@@ -634,8 +626,8 @@
       "question": "How many customers have a total of paid payments that is above the average customer total? Only count payments with a status of paid, and average over customers who have at least one paid payment.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "WITH per_customer AS (SELECT o.customer_id, SUM(p.amount) AS total_paid FROM payments AS p JOIN orders AS o ON p.order_id = o.order_id WHERE p.payment_status = 'paid' GROUP BY o.customer_id) SELECT COUNT(*) AS customers_above_average FROM per_customer WHERE total_paid > (SELECT AVG(total_paid) FROM per_customer)",
-      "agent_answer": "There are **93 customers** whose total paid payments exceed the average total paid amount among customers with at least one paid payment.",
+      "generated_sql": "WITH per_customer AS (SELECT o.customer_id, SUM(p.amount) AS total_paid FROM payments AS p JOIN orders AS o ON p.order_id = o.order_id WHERE p.payment_status = 'paid' GROUP BY o.customer_id) SELECT COUNT(*) AS customers_above_average FROM per_customer AS pc WHERE pc.total_paid > (SELECT AVG(total_paid) FROM per_customer)",
+      "agent_answer": "There are **93 customers** whose total amount of paid payments exceeds the average total paid amount among customers with at least one paid payment.",
       "expected_rows": [
         {
           "count": 93
@@ -655,7 +647,7 @@
       "question": "How many customers placed orders in both January 2026 and February 2026?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(*) AS customers_in_both_months FROM (SELECT customer_id FROM orders WHERE order_date >= CAST('2026-01-01' AS DATE) AND order_date < CAST('2026-03-01' AS DATE) GROUP BY customer_id HAVING COUNT(DISTINCT DATE_TRUNC('MONTH', order_date)) = 2) AS t",
+      "generated_sql": "SELECT COUNT(*) AS customers_in_jan_and_feb FROM (SELECT customer_id FROM orders WHERE order_date >= CAST('2026-01-01' AS DATE) AND order_date < CAST('2026-03-01' AS DATE) GROUP BY customer_id HAVING SUM(CASE WHEN order_date >= CAST('2026-01-01' AS DATE) AND order_date < CAST('2026-02-01' AS DATE) THEN 1 ELSE 0 END) > 0 AND SUM(CASE WHEN order_date >= CAST('2026-02-01' AS DATE) AND order_date < CAST('2026-03-01' AS DATE) THEN 1 ELSE 0 END) > 0) AS sub",
       "agent_answer": "47 customers placed orders in both January\u202f2026 and February\u202f2026.",
       "expected_rows": [
         {
@@ -664,7 +656,7 @@
       ],
       "actual_rows": [
         {
-          "customers_in_both_months": 47
+          "customers_in_jan_and_feb": 47
         }
       ],
       "attempts": 1

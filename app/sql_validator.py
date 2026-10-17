@@ -4,6 +4,13 @@ Validate generated SQL before it is allowed to run.
 
 from sqlglot import exp, parse
 
+# The only tables the agent is allowed to read
+ALLOWED_TABLES = {
+    "customers", "addresses", "categories", "brands", "suppliers",
+    "products", "inventory", "coupons", "orders", "order_items",
+    "order_coupons", "payments", "shipments", "reviews", "returns",
+}
+
 
 def validate_sql(sql_query):
     """
@@ -42,6 +49,24 @@ def validate_sql(sql_query):
         for expression_type in unsafe_expressions_types
     ):
         raise ValueError("Data changing SQL is not allowed.")
+
+        # Names created by WITH clauses are temporary, so they are allowed
+    cte_names = {cte.alias_or_name.lower() for cte in statement.find_all(exp.CTE)}
+
+    for table in statement.find_all(exp.Table):
+        table_name = table.name.lower()
+
+        # Table functions such as generate_series have no name, so skip them
+        if not table_name:
+            continue
+
+        # Block other schemas such as information_schema or pg_catalog
+        if table.db and table.db.lower() != "public":
+            raise ValueError("Only the ecommerce tables are allowed.")
+
+        # Block any table that is not an ecommerce table or a WITH name
+        if table_name not in ALLOWED_TABLES and table_name not in cte_names:
+            raise ValueError("Only the ecommerce tables are allowed.")
 
     return statement.sql(dialect="postgres")
 
