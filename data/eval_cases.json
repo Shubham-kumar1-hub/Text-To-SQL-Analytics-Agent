@@ -88,5 +88,365 @@
         "reference_sql": "SELECT COUNT(*) FROM products WHERE price > 10000",
         "ordered": false,
         "expect_clarification": false
+    },
+    {
+        "id": "t2_01",
+        "split": "dev",
+        "tier": "joins",
+        "question": "List the names of the products in the Footwear category.",
+        "reference_sql": "SELECT p.name FROM products p JOIN categories c ON p.category_id = c.category_id WHERE c.name = 'Footwear'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_02",
+        "split": "dev",
+        "tier": "joins",
+        "question": "List the names of the brands that make products in the Mobiles category.",
+        "reference_sql": "SELECT DISTINCT b.name FROM products p JOIN brands b ON p.brand_id = b.brand_id JOIN categories c ON p.category_id = c.category_id WHERE c.name = 'Mobiles'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_03",
+        "split": "dev",
+        "tier": "joins",
+        "question": "How many different gold loyalty tier customers have at least one cancelled order?",
+        "reference_sql": "SELECT COUNT(DISTINCT c.customer_id) FROM customers c JOIN orders o ON c.customer_id = o.customer_id WHERE c.loyalty_tier = 'gold' AND o.status = 'cancelled'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_04",
+        "split": "dev",
+        "tier": "joins",
+        "question": "List the names of the products whose stock quantity is below their reorder level.",
+        "reference_sql": "SELECT p.name FROM products p JOIN inventory i ON p.product_id = i.product_id WHERE i.stock_quantity < i.reorder_level",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_05",
+        "split": "test",
+        "tier": "joins",
+        "question": "How many delivered orders were sent with the DTDC carrier?",
+        "reference_sql": "SELECT COUNT(*) FROM orders o JOIN shipments s ON o.order_id = s.order_id WHERE o.status = 'delivered' AND s.carrier = 'DTDC'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_06",
+        "split": "test",
+        "tier": "joins",
+        "question": "List the names of the products that have at least one review with a rating of 1.",
+        "reference_sql": "SELECT DISTINCT p.name FROM products p JOIN reviews r ON p.product_id = r.product_id WHERE r.rating = 1",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_07",
+        "split": "test",
+        "tier": "joins",
+        "question": "What is the total refund amount of returned items for products in the Laptops category?",
+        "reference_sql": "SELECT SUM(r.refund_amount) FROM returns r JOIN order_items oi ON r.order_item_id = oi.order_item_id JOIN products p ON oi.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id WHERE c.name = 'Laptops'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_08",
+        "split": "test",
+        "tier": "joins",
+        "question": "List the email addresses of customers who gave a rating of 5 to the product named Pulse Sneakers.",
+        "reference_sql": "SELECT c.email FROM customers c JOIN reviews r ON c.customer_id = r.customer_id JOIN products p ON r.product_id = p.product_id WHERE p.name = 'Pulse Sneakers' AND r.rating = 5",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_09",
+        "split": "test",
+        "tier": "joins",
+        "question": "What is the name of the supplier of the most expensive product?",
+        "reference_sql": "SELECT s.name FROM suppliers s JOIN products p ON s.supplier_id = p.supplier_id ORDER BY p.price DESC LIMIT 1",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t2_10",
+        "split": "test",
+        "tier": "joins",
+        "question": "How many orders used a coupon with a discount of 20 percent or more?",
+        "reference_sql": "SELECT COUNT(*) FROM order_coupons oc JOIN coupons c ON oc.coupon_id = c.coupon_id WHERE c.discount_percent >= 20",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_01",
+        "split": "dev",
+        "tier": "aggregation",
+        "question": "How many customers are in each loyalty tier? Show the tier and the count.",
+        "reference_sql": "SELECT loyalty_tier, COUNT(*) FROM customers GROUP BY loyalty_tier",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_02",
+        "split": "dev",
+        "tier": "aggregation",
+        "question": "What is the average review rating for each category that has at least one review? Show the category name and the average rating rounded to 2 decimal places.",
+        "reference_sql": "SELECT c.name, ROUND(AVG(r.rating), 2) FROM reviews r JOIN products p ON r.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id GROUP BY c.name",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_03",
+        "split": "dev",
+        "tier": "aggregation",
+        "question": "What is the total quantity of items ordered for each order status? Show the status and the total quantity.",
+        "reference_sql": "SELECT o.status, SUM(oi.quantity) FROM orders o JOIN order_items oi ON o.order_id = oi.order_id GROUP BY o.status",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_04",
+        "split": "dev",
+        "tier": "aggregation",
+        "question": "How many payments are there for each payment method? Show the method and the count.",
+        "reference_sql": "SELECT method, COUNT(*) FROM payments GROUP BY method",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_05",
+        "split": "test",
+        "tier": "aggregation",
+        "question": "Which payment method has the highest total amount among payments with a status of paid? Show the method and the total amount.",
+        "reference_sql": "SELECT method, SUM(amount) FROM payments WHERE payment_status = 'paid' GROUP BY method ORDER BY SUM(amount) DESC LIMIT 1",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_06",
+        "split": "test",
+        "tier": "aggregation",
+        "question": "What are the 3 categories with the highest total sales, where sales is the sum of quantity times unit price from order items? Show the category name and the total sales.",
+        "reference_sql": "SELECT c.name, SUM(oi.quantity * oi.unit_price) FROM order_items oi JOIN products p ON oi.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id GROUP BY c.name ORDER BY SUM(oi.quantity * oi.unit_price) DESC LIMIT 3",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_07",
+        "split": "test",
+        "tier": "aggregation",
+        "question": "Which customers have placed more than 12 orders? Show the customer id and the number of orders.",
+        "reference_sql": "SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id HAVING COUNT(*) > 12",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_08",
+        "split": "test",
+        "tier": "aggregation",
+        "question": "What is the average payment amount for each payment status? Show the status and the average amount rounded to 2 decimal places.",
+        "reference_sql": "SELECT payment_status, ROUND(AVG(amount), 2) FROM payments GROUP BY payment_status",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_09",
+        "split": "test",
+        "tier": "aggregation",
+        "question": "Which brands have at least 6 products? Show the brand name and the number of products.",
+        "reference_sql": "SELECT b.name, COUNT(*) FROM products p JOIN brands b ON p.brand_id = b.brand_id GROUP BY b.name HAVING COUNT(*) >= 6",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t3_10",
+        "split": "test",
+        "tier": "aggregation",
+        "question": "What is the total refund amount for each return reason? Show the reason and the total refund amount.",
+        "reference_sql": "SELECT reason, SUM(refund_amount) FROM returns GROUP BY reason",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_01",
+        "split": "dev",
+        "tier": "dates_subqueries",
+        "question": "How many orders were placed in March 2026?",
+        "reference_sql": "SELECT COUNT(*) FROM orders WHERE order_date >= '2026-03-01' AND order_date < '2026-04-01'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_02",
+        "split": "dev",
+        "tier": "dates_subqueries",
+        "question": "How many customers signed up before 1 January 2025?",
+        "reference_sql": "SELECT COUNT(*) FROM customers WHERE signup_date < '2025-01-01'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_03",
+        "split": "dev",
+        "tier": "dates_subqueries",
+        "question": "How many customers have never written a review?",
+        "reference_sql": "SELECT COUNT(*) FROM customers c WHERE NOT EXISTS (SELECT 1 FROM reviews r WHERE r.customer_id = c.customer_id)",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_04",
+        "split": "dev",
+        "tier": "dates_subqueries",
+        "question": "How many delivered orders contain more than 3 different products?",
+        "reference_sql": "SELECT COUNT(*) FROM (SELECT o.order_id FROM orders o JOIN order_items oi ON o.order_id = oi.order_id WHERE o.status = 'delivered' GROUP BY o.order_id HAVING COUNT(DISTINCT oi.product_id) > 3) t",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_05",
+        "split": "test",
+        "tier": "dates_subqueries",
+        "question": "What is the average number of days between the shipped date and the delivered date for delivered shipments, rounded to 2 decimal places?",
+        "reference_sql": "SELECT ROUND(AVG(delivered_date - shipped_date), 2) FROM shipments WHERE delivered_date IS NOT NULL",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_06",
+        "split": "test",
+        "tier": "dates_subqueries",
+        "question": "List the names of products that cost more than the average product price and have a stock quantity below 50.",
+        "reference_sql": "SELECT p.name FROM products p JOIN inventory i ON p.product_id = i.product_id WHERE p.price > (SELECT AVG(price) FROM products) AND i.stock_quantity < 50",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_07",
+        "split": "test",
+        "tier": "dates_subqueries",
+        "question": "How many orders placed in 2026 were cancelled?",
+        "reference_sql": "SELECT COUNT(*) FROM orders WHERE status = 'cancelled' AND order_date >= '2026-01-01' AND order_date < '2027-01-01'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_08",
+        "split": "test",
+        "tier": "dates_subqueries",
+        "question": "What is the total amount of paid payments for orders placed between 1 January 2026 and 31 March 2026, including all of 31 March?",
+        "reference_sql": "SELECT SUM(p.amount) FROM payments p JOIN orders o ON p.order_id = o.order_id WHERE p.payment_status = 'paid' AND o.order_date >= '2026-01-01' AND o.order_date < '2026-04-01'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_09",
+        "split": "test",
+        "tier": "dates_subqueries",
+        "question": "How many different customers have placed orders that include a product from the Laptops category and also orders that include a product from the Mobiles category?",
+        "reference_sql": "SELECT COUNT(*) FROM customers c WHERE c.customer_id IN (SELECT o.customer_id FROM orders o JOIN order_items oi ON o.order_id = oi.order_id JOIN products p ON oi.product_id = p.product_id JOIN categories cat ON p.category_id = cat.category_id WHERE cat.name = 'Laptops') AND c.customer_id IN (SELECT o.customer_id FROM orders o JOIN order_items oi ON o.order_id = oi.order_id JOIN products p ON oi.product_id = p.product_id JOIN categories cat ON p.category_id = cat.category_id WHERE cat.name = 'Mobiles')",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t4_10",
+        "split": "test",
+        "tier": "dates_subqueries",
+        "question": "Which customers have returned at least 3 items? Show the customer id and the number of returned items.",
+        "reference_sql": "SELECT o.customer_id, COUNT(*) FROM returns r JOIN order_items oi ON r.order_item_id = oi.order_item_id JOIN orders o ON oi.order_id = o.order_id GROUP BY o.customer_id HAVING COUNT(*) >= 3",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t5_01",
+        "split": "dev",
+        "tier": "ambiguity",
+        "question": "Which product category performs best?",
+        "reference_sql": null,
+        "ordered": false,
+        "expect_clarification": true
+    },
+    {
+        "id": "t5_02",
+        "split": "dev",
+        "tier": "ambiguity",
+        "question": "Show me our most valuable customers.",
+        "reference_sql": null,
+        "ordered": false,
+        "expect_clarification": true
+    },
+    {
+        "id": "t5_03",
+        "split": "dev",
+        "tier": "ambiguity",
+        "question": "Which loyalty tier has the most customers?",
+        "reference_sql": "SELECT loyalty_tier FROM customers GROUP BY loyalty_tier ORDER BY COUNT(*) DESC LIMIT 1",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t5_04",
+        "split": "dev",
+        "tier": "ambiguity",
+        "question": "What is the most common payment method?",
+        "reference_sql": "SELECT method FROM payments GROUP BY method ORDER BY COUNT(*) DESC LIMIT 1",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t5_05",
+        "split": "test",
+        "tier": "ambiguity",
+        "question": "Which supplier is the most reliable?",
+        "reference_sql": null,
+        "ordered": false,
+        "expect_clarification": true
+    },
+    {
+        "id": "t5_06",
+        "split": "test",
+        "tier": "ambiguity",
+        "question": "What was our best month?",
+        "reference_sql": null,
+        "ordered": false,
+        "expect_clarification": true
+    },
+    {
+        "id": "t5_07",
+        "split": "test",
+        "tier": "ambiguity",
+        "question": "Which products are problematic?",
+        "reference_sql": null,
+        "ordered": false,
+        "expect_clarification": true
+    },
+    {
+        "id": "t5_08",
+        "split": "test",
+        "tier": "ambiguity",
+        "question": "Which customers are likely to stop buying from us?",
+        "reference_sql": null,
+        "ordered": false,
+        "expect_clarification": true
+    },
+    {
+        "id": "t5_09",
+        "split": "test",
+        "tier": "ambiguity",
+        "question": "Which order status is the most common?",
+        "reference_sql": "SELECT status FROM orders GROUP BY status ORDER BY COUNT(*) DESC LIMIT 1",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t5_10",
+        "split": "test",
+        "tier": "ambiguity",
+        "question": "How many orders has customer 117 placed?",
+        "reference_sql": "SELECT COUNT(*) FROM orders WHERE customer_id = 117",
+        "ordered": false,
+        "expect_clarification": false
     }
 ]
