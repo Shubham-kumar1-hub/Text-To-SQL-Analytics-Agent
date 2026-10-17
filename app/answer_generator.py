@@ -44,4 +44,13 @@ Database results:
 """
 
     response = llm.invoke(prompt)
-    return response.content.strip()
+    answer = response.content.strip()
+
+    # Warn the user if the database results were cut off at the row limit
+    if query_result.get("truncated"):
+        answer += (
+            f"\n\nNote: only the first {len(query_result['rows'])} rows are shown "
+            "because results are limited."
+        )
+
+    return answer
