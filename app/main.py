@@ -23,7 +23,7 @@ app = FastAPI(
 EVALUATION_RESULTS_FILE = (
     Path(__file__).resolve().parent.parent
     / "data"
-    / "evaluation_results.json"
+    / "eval_results_test.json"
 )
 
 class QueryRequest(BaseModel):

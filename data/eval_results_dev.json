@@ -1,0 +1,628 @@
+{
+  "evaluated_at": "2026-10-17T16:06:49.896427+05:30",
+  "split": "dev",
+  "passed_cases": 16,
+  "total_cases": 20,
+  "execution_accuracy_percent": 80.0,
+  "by_tier": {
+    "single_table": {
+      "passed": 2,
+      "total": 4
+    },
+    "joins": {
+      "passed": 4,
+      "total": 4
+    },
+    "aggregation": {
+      "passed": 4,
+      "total": 4
+    },
+    "dates_subqueries": {
+      "passed": 4,
+      "total": 4
+    },
+    "ambiguity": {
+      "passed": 2,
+      "total": 4
+    }
+  },
+  "results": [
+    {
+      "id": "t1_01",
+      "split": "dev",
+      "tier": "single_table",
+      "question": "How many customers have the gold loyalty tier?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS gold_customers_count FROM customers WHERE loyalty_tier = 'gold'",
+      "agent_answer": "There are **16** customers with the gold loyalty tier.",
+      "expected_rows": [
+        {
+          "count": 16
+        }
+      ],
+      "actual_rows": [
+        {
+          "gold_customers_count": 16
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_02",
+      "split": "dev",
+      "tier": "single_table",
+      "question": "What is the average product price, rounded to 2 decimal places?",
+      "is_correct": false,
+      "failure_reason": "asked for clarification on a clear question",
+      "generated_sql": null,
+      "agent_answer": "Should the average be calculated across all products in the catalog, or only for products that have been sold/ordered?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t1_03",
+      "split": "dev",
+      "tier": "single_table",
+      "question": "List the coupon codes that give a discount of 15 percent or more.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT code FROM coupons WHERE discount_percent >= 15 LIMIT 20",
+      "agent_answer": "The coupon codes with a discount of\u202f15\u202fpercent or more are:\n\n- FESTIVE20  \n- SAVE15  \n- FLASH25",
+      "expected_rows": [
+        {
+          "code": "FESTIVE20"
+        },
+        {
+          "code": "SAVE15"
+        },
+        {
+          "code": "FLASH25"
+        }
+      ],
+      "actual_rows": [
+        {
+          "code": "FESTIVE20"
+        },
+        {
+          "code": "SAVE15"
+        },
+        {
+          "code": "FLASH25"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_04",
+      "split": "dev",
+      "tier": "single_table",
+      "question": "How many payments were made by UPI?",
+      "is_correct": false,
+      "failure_reason": "asked for clarification on a clear question",
+      "generated_sql": null,
+      "agent_answer": "Do you want to count only successful (paid) payments, or all payment attempts regardless of status?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t2_01",
+      "split": "dev",
+      "tier": "joins",
+      "question": "List the names of the products in the Footwear category.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT p.name FROM products AS p JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Footwear' LIMIT 20",
+      "agent_answer": "- Orbit Running Shoes  \n- Zenith Running Shoes  \n- Vivo Leather Sandals  \n- Urban Leather Sandals  \n- Pulse Sneakers  \n- Orbit Sneakers",
+      "expected_rows": [
+        {
+          "name": "Orbit Running Shoes"
+        },
+        {
+          "name": "Zenith Running Shoes"
+        },
+        {
+          "name": "Vivo Leather Sandals"
+        },
+        {
+          "name": "Urban Leather Sandals"
+        },
+        {
+          "name": "Pulse Sneakers"
+        },
+        {
+          "name": "Orbit Sneakers"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Orbit Running Shoes"
+        },
+        {
+          "name": "Zenith Running Shoes"
+        },
+        {
+          "name": "Vivo Leather Sandals"
+        },
+        {
+          "name": "Urban Leather Sandals"
+        },
+        {
+          "name": "Pulse Sneakers"
+        },
+        {
+          "name": "Orbit Sneakers"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_02",
+      "split": "dev",
+      "tier": "joins",
+      "question": "List the names of the brands that make products in the Mobiles category.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT DISTINCT b.name FROM brands AS b JOIN products AS p ON p.brand_id = b.brand_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Mobiles' LIMIT 20",
+      "agent_answer": "The brands with products in the **Mobiles** category are:\n\n- Bolt  \n- Kite  \n- Terra  \n- Vivo  \n- Zenith",
+      "expected_rows": [
+        {
+          "name": "Bolt"
+        },
+        {
+          "name": "Kite"
+        },
+        {
+          "name": "Terra"
+        },
+        {
+          "name": "Vivo"
+        },
+        {
+          "name": "Zenith"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Bolt"
+        },
+        {
+          "name": "Kite"
+        },
+        {
+          "name": "Terra"
+        },
+        {
+          "name": "Vivo"
+        },
+        {
+          "name": "Zenith"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_03",
+      "split": "dev",
+      "tier": "joins",
+      "question": "How many different gold loyalty tier customers have at least one cancelled order?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(DISTINCT c.customer_id) AS gold_customers_with_cancelled_orders FROM customers AS c JOIN orders AS o ON c.customer_id = o.customer_id WHERE c.loyalty_tier = 'gold' AND o.status = 'cancelled'",
+      "agent_answer": "There are **11** gold\u2011tier customers who have at least one cancelled order.",
+      "expected_rows": [
+        {
+          "count": 11
+        }
+      ],
+      "actual_rows": [
+        {
+          "gold_customers_with_cancelled_orders": 11
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_04",
+      "split": "dev",
+      "tier": "joins",
+      "question": "List the names of the products whose stock quantity is below their reorder level.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT p.name FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id WHERE i.stock_quantity < i.reorder_level LIMIT 20",
+      "agent_answer": "The products with stock below their reorder level are:\n\n- Apex Denim Jacket  \n- Pulse Sneakers",
+      "expected_rows": [
+        {
+          "name": "Apex Denim Jacket"
+        },
+        {
+          "name": "Pulse Sneakers"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Apex Denim Jacket"
+        },
+        {
+          "name": "Pulse Sneakers"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_01",
+      "split": "dev",
+      "tier": "aggregation",
+      "question": "How many customers are in each loyalty tier? Show the tier and the count.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT loyalty_tier, COUNT(*) AS customer_count FROM customers GROUP BY loyalty_tier ORDER BY loyalty_tier LIMIT 20",
+      "agent_answer": "**Loyalty Tier \u2013 Customer Count**\n\n- bronze: 145  \n- gold: 16  \n- silver: 39",
+      "expected_rows": [
+        {
+          "loyalty_tier": "silver",
+          "count": 39
+        },
+        {
+          "loyalty_tier": "bronze",
+          "count": 145
+        },
+        {
+          "loyalty_tier": "gold",
+          "count": 16
+        }
+      ],
+      "actual_rows": [
+        {
+          "loyalty_tier": "bronze",
+          "customer_count": 145
+        },
+        {
+          "loyalty_tier": "gold",
+          "customer_count": 16
+        },
+        {
+          "loyalty_tier": "silver",
+          "customer_count": 39
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_02",
+      "split": "dev",
+      "tier": "aggregation",
+      "question": "What is the average review rating for each category that has at least one review? Show the category name and the average rating rounded to 2 decimal places.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT c.name AS category_name, ROUND(CAST(AVG(r.rating) AS DECIMAL), 2) AS average_rating FROM reviews AS r JOIN products AS p ON r.product_id = p.product_id JOIN categories AS c ON p.category_id = c.category_id GROUP BY c.name HAVING COUNT(r.review_id) > 0 ORDER BY c.name LIMIT 20",
+      "agent_answer": "**Average Review Ratings by Category**\n\n| Category | Average Rating |\n|----------|----------------|\n| Books | 3.87 |\n| Cookware | 3.96 |\n| Fitness Equipment | 3.74 |\n| Footwear | 3.72 |\n| Furniture | 4.16 |\n| Headphones | 3.75 |\n| Laptops | 3.73 |\n| Men's Clothing | 3.88 |\n| Mobiles | 4.20 |\n| Women's Clothing | 3.98 |",
+      "expected_rows": [
+        {
+          "name": "Furniture",
+          "round": "4.16"
+        },
+        {
+          "name": "Women's Clothing",
+          "round": "3.98"
+        },
+        {
+          "name": "Footwear",
+          "round": "3.72"
+        },
+        {
+          "name": "Men's Clothing",
+          "round": "3.88"
+        },
+        {
+          "name": "Cookware",
+          "round": "3.96"
+        },
+        {
+          "name": "Laptops",
+          "round": "3.73"
+        },
+        {
+          "name": "Fitness Equipment",
+          "round": "3.74"
+        },
+        {
+          "name": "Books",
+          "round": "3.87"
+        },
+        {
+          "name": "Mobiles",
+          "round": "4.20"
+        },
+        {
+          "name": "Headphones",
+          "round": "3.75"
+        }
+      ],
+      "actual_rows": [
+        {
+          "category_name": "Books",
+          "average_rating": "3.87"
+        },
+        {
+          "category_name": "Cookware",
+          "average_rating": "3.96"
+        },
+        {
+          "category_name": "Fitness Equipment",
+          "average_rating": "3.74"
+        },
+        {
+          "category_name": "Footwear",
+          "average_rating": "3.72"
+        },
+        {
+          "category_name": "Furniture",
+          "average_rating": "4.16"
+        },
+        {
+          "category_name": "Headphones",
+          "average_rating": "3.75"
+        },
+        {
+          "category_name": "Laptops",
+          "average_rating": "3.73"
+        },
+        {
+          "category_name": "Men's Clothing",
+          "average_rating": "3.88"
+        },
+        {
+          "category_name": "Mobiles",
+          "average_rating": "4.20"
+        },
+        {
+          "category_name": "Women's Clothing",
+          "average_rating": "3.98"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_03",
+      "split": "dev",
+      "tier": "aggregation",
+      "question": "What is the total quantity of items ordered for each order status? Show the status and the total quantity.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT o.status, SUM(oi.quantity) AS total_quantity FROM orders AS o JOIN order_items AS oi ON o.order_id = oi.order_id GROUP BY o.status ORDER BY o.status LIMIT 20",
+      "agent_answer": "**Total quantity of items by order status**\n\n- cancelled: 759  \n- delivered: 5,215  \n- placed: 533  \n- shipped: 1,031",
+      "expected_rows": [
+        {
+          "status": "shipped",
+          "sum": 1031
+        },
+        {
+          "status": "cancelled",
+          "sum": 759
+        },
+        {
+          "status": "placed",
+          "sum": 533
+        },
+        {
+          "status": "delivered",
+          "sum": 5215
+        }
+      ],
+      "actual_rows": [
+        {
+          "status": "cancelled",
+          "total_quantity": 759
+        },
+        {
+          "status": "delivered",
+          "total_quantity": 5215
+        },
+        {
+          "status": "placed",
+          "total_quantity": 533
+        },
+        {
+          "status": "shipped",
+          "total_quantity": 1031
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_04",
+      "split": "dev",
+      "tier": "aggregation",
+      "question": "How many payments are there for each payment method? Show the method and the count.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT method, COUNT(*) AS payment_count FROM payments GROUP BY method ORDER BY payment_count DESC LIMIT 20",
+      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| cod         | 370 |\n| netbanking  | 369 |\n| card        | 366 |",
+      "expected_rows": [
+        {
+          "method": "upi",
+          "count": 395
+        },
+        {
+          "method": "card",
+          "count": 366
+        },
+        {
+          "method": "cod",
+          "count": 370
+        },
+        {
+          "method": "netbanking",
+          "count": 369
+        }
+      ],
+      "actual_rows": [
+        {
+          "method": "upi",
+          "payment_count": 395
+        },
+        {
+          "method": "cod",
+          "payment_count": 370
+        },
+        {
+          "method": "netbanking",
+          "payment_count": 369
+        },
+        {
+          "method": "card",
+          "payment_count": 366
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_01",
+      "split": "dev",
+      "tier": "dates_subqueries",
+      "question": "How many orders were placed in March 2026?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders WHERE order_date >= '2026-03-01' AND order_date < '2026-04-01'",
+      "agent_answer": "There were **115 orders** placed in March\u202f2026.",
+      "expected_rows": [
+        {
+          "count": 115
+        }
+      ],
+      "actual_rows": [
+        {
+          "order_count": 115
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_02",
+      "split": "dev",
+      "tier": "dates_subqueries",
+      "question": "How many customers signed up before 1 January 2025?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS customer_count FROM customers WHERE signup_date < CAST('2025-01-01' AS DATE)",
+      "agent_answer": "85 customers signed up before\u202f1\u202fJanuary\u202f2025.",
+      "expected_rows": [
+        {
+          "count": 85
+        }
+      ],
+      "actual_rows": [
+        {
+          "customer_count": 85
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_03",
+      "split": "dev",
+      "tier": "dates_subqueries",
+      "question": "How many customers have never written a review?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS customers_without_review FROM customers AS c WHERE NOT EXISTS(SELECT 1 FROM reviews AS r WHERE r.customer_id = c.customer_id)",
+      "agent_answer": "19 customers have never written a review.",
+      "expected_rows": [
+        {
+          "count": 19
+        }
+      ],
+      "actual_rows": [
+        {
+          "customers_without_review": 19
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_04",
+      "split": "dev",
+      "tier": "dates_subqueries",
+      "question": "How many delivered orders contain more than 3 different products?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS delivered_orders_with_more_than_3_products FROM (SELECT oi.order_id FROM orders AS o JOIN order_items AS oi ON o.order_id = oi.order_id WHERE o.status = 'delivered' GROUP BY oi.order_id HAVING COUNT(DISTINCT oi.product_id) > 3) AS sub",
+      "agent_answer": "There are **248** delivered orders that contain more than three different products.",
+      "expected_rows": [
+        {
+          "count": 248
+        }
+      ],
+      "actual_rows": [
+        {
+          "delivered_orders_with_more_than_3_products": 248
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t5_01",
+      "split": "dev",
+      "tier": "ambiguity",
+      "question": "Which product category performs best?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": null,
+      "agent_answer": "What metric should be used to define \u201cperforms best\u201d (e.g., revenue, units sold, profit, etc.)?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t5_02",
+      "split": "dev",
+      "tier": "ambiguity",
+      "question": "Show me our most valuable customers.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": null,
+      "agent_answer": "Do you want the customers ranked by total revenue, total profit, or number of orders?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t5_03",
+      "split": "dev",
+      "tier": "ambiguity",
+      "question": "Which loyalty tier has the most customers?",
+      "is_correct": false,
+      "failure_reason": "result rows differ from reference",
+      "generated_sql": "SELECT loyalty_tier, COUNT(*) AS customer_count FROM customers GROUP BY loyalty_tier ORDER BY customer_count DESC LIMIT 1",
+      "agent_answer": "The loyalty tier with the most customers is **bronze**, with 145 customers.",
+      "expected_rows": [
+        {
+          "loyalty_tier": "bronze"
+        }
+      ],
+      "actual_rows": [
+        {
+          "loyalty_tier": "bronze",
+          "customer_count": 145
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t5_04",
+      "split": "dev",
+      "tier": "ambiguity",
+      "question": "What is the most common payment method?",
+      "is_correct": false,
+      "failure_reason": "asked for clarification on a clear question",
+      "generated_sql": null,
+      "agent_answer": "Should the count include only successful (paid) payments, or all payment attempts regardless of payment_status?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    }
+  ]
+}
