@@ -13,6 +13,8 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
+from itertools import permutations
+
 from app.agent import run_agent
 from app.sql_executor import execute_sql
 
@@ -36,23 +38,52 @@ def normalize_value(value):
     return str(value).strip()
 
 
-def normalize_row(row):
-    """Turn a row into a sorted tuple of strings, ignoring column names and order."""
-    return tuple(sorted(normalize_value(value) for value in row.values()))
+def normalize_rows(rows):
+    """Turn each row into a list of normalized strings, keeping column order."""
+    return [[normalize_value(value) for value in row.values()] for row in rows]
 
 
 def rows_match(actual_rows, expected_rows, ordered):
-    """Comparing two result sets, respecting row order only when required."""
+    """
+    Compare two result sets.
 
-    actual = [normalize_row(row) for row in actual_rows]
-    expected = [normalize_row(row) for row in expected_rows]
+    The agent may return extra columns or columns in a different order.
+    Every expected column must still appear, with matching values row by row.
+    """
 
-    # If the question has no ranking, row order does not matter
+    actual = normalize_rows(actual_rows)
+    expected = normalize_rows(expected_rows)
+
+    # Different row counts can never match
+    if len(actual) != len(expected):
+        return False
+
+    # Both empty means they match
+    if not expected:
+        return True
+
+    num_expected = len(expected[0])
+    num_actual = len(actual[0])
+
+    # The agent must return at least as many columns as expected
+    if num_actual < num_expected:
+        return False
+
+    # Without a ranking, row order does not matter
     if not ordered:
-        actual.sort()
-        expected.sort()
+        expected = sorted(expected)
 
-    return actual == expected
+    # Try every way of picking and ordering the agent's columns
+    for indexes in permutations(range(num_actual), num_expected):
+        projected = [[row[i] for i in indexes] for row in actual]
+
+        if not ordered:
+            projected = sorted(projected)
+
+        if projected == expected:
+            return True
+
+    return False
 
 
 def evaluate_case(case):
@@ -138,6 +169,7 @@ def run_evaluation(split):
         if not result["is_correct"]:
             print(f"     reason: {result['failure_reason']}")
             print(f"     sql:    {result['generated_sql']}")
+            print(f"     answer: {result['agent_answer'][:200]}")
 
     # Count passes overall and per tier
     passed = sum(result["is_correct"] for result in results)

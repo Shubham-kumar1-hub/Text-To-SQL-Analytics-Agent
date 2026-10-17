@@ -24,23 +24,29 @@ def check_question(question):
     - clarification: a question for the user when clarification is needed
     """
 
-    # General rules only. No hints written for specific test questions.
+        # General rules only. No hints written for specific test questions.
     prompt = f"""
 You decide whether an ecommerce analytics question is ready to be turned into SQL.
 
-Mark a question AMBIGUOUS only when two or more reasonable readings would give
-materially different answers, and the question does not say which one it means.
-For example, "popular" could mean most units sold, most revenue, or most reviews.
+A question is AMBIGUOUS only when its core measure or ranking criterion is
+undefined. This happens when it uses a vague quality word, such as a word like
+"popular", with no metric that says how to measure it.
+Several different metrics could be meant, and they would give different answers.
 
-Do NOT mark a question ambiguous just because:
-- it has no time period (assume all available data is wanted)
-- it can be read in slightly different ways that give the same or almost the same answer
+A question is CLEAR when it names its metric, or when the metric is obvious
+from the question (a count, a total, an average, the most or least common value).
 
-Do not invent extra filters or distinctions.
+Scope rules:
+- If the question does not mention a filter, there is no filter. Use all rows
+  in the relevant table.
+- Never ask whether to restrict the data to a subset (for example by status,
+  by whether something was sold, or by active or inactive items).
+  If the user wanted a subset, they would have said so.
+- Never ask about time periods. If none is given, use all available data.
+- Do not invent extra filters, distinctions, or definitions.
 
-Reference notes about the data:
-- orders.status is one of: placed, shipped, delivered, cancelled.
-- payments.payment_status is one of: paid, failed, refunded.
+Example of a CLEAR question: "How many addresses are in each state?"
+Nobody needs to choose anything to answer it.
 
 Return exactly one of these formats:
 
