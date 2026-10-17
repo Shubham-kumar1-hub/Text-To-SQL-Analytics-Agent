@@ -448,5 +448,149 @@
         "reference_sql": "SELECT COUNT(*) FROM orders WHERE customer_id = 117",
         "ordered": false,
         "expect_clarification": false
+    },
+    {
+        "id": "c1_01",
+        "split": "challenge",
+        "tier": "messy_phrasing",
+        "question": "how many custmers are in the gold tier",
+        "reference_sql": "SELECT COUNT(*) FROM customers WHERE loyalty_tier = 'gold'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_02",
+        "split": "challenge",
+        "tier": "messy_phrasing",
+        "question": "gimme the 3 priciest things",
+        "reference_sql": "SELECT name, price FROM products ORDER BY price DESC LIMIT 3",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_03",
+        "split": "challenge",
+        "tier": "messy_phrasing",
+        "question": "what % of orders got canceled? round to 2 decimals",
+        "reference_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'cancelled') / COUNT(*), 2) FROM orders",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_04",
+        "split": "challenge",
+        "tier": "messy_phrasing",
+        "question": "which brand has the most products",
+        "reference_sql": "SELECT b.name FROM products p JOIN brands b ON p.brand_id = b.brand_id GROUP BY b.name ORDER BY COUNT(*) DESC LIMIT 1",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_05",
+        "split": "challenge",
+        "tier": "messy_phrasing",
+        "question": "how many customers never returned anything",
+        "reference_sql": "SELECT COUNT(*) FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN returns r ON r.order_item_id = oi.order_item_id WHERE o.customer_id = c.customer_id)",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_06",
+        "split": "challenge",
+        "tier": "value_traps",
+        "question": "how many orders got canceled",
+        "reference_sql": "SELECT COUNT(*) FROM orders WHERE status = 'cancelled'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_07",
+        "split": "challenge",
+        "tier": "value_traps",
+        "question": "total payment amount for net banking payments",
+        "reference_sql": "SELECT SUM(amount) FROM payments WHERE method = 'netbanking'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_08",
+        "split": "challenge",
+        "tier": "value_traps",
+        "question": "how many payments were cash on delivery",
+        "reference_sql": "SELECT COUNT(*) FROM payments WHERE method = 'cod'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_09",
+        "split": "challenge",
+        "tier": "value_traps",
+        "question": "how many shipments went through Blue Dart",
+        "reference_sql": "SELECT COUNT(*) FROM shipments WHERE carrier = 'BlueDart'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c1_10",
+        "split": "challenge",
+        "tier": "value_traps",
+        "question": "list the emails of customers on the Gold plan",
+        "reference_sql": "SELECT email FROM customers WHERE loyalty_tier = 'gold'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c2_01",
+        "split": "challenge",
+        "tier": "hard_sql",
+        "question": "What are the total sales for each top-level category, counting the sales of its sub-categories too? Sales is the sum of quantity times unit price from order items. Show the top-level category name and the total sales.",
+        "reference_sql": "SELECT COALESCE(parent.name, c.name), SUM(oi.quantity * oi.unit_price) FROM order_items oi JOIN products p ON oi.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id LEFT JOIN categories parent ON c.parent_category_id = parent.category_id GROUP BY COALESCE(parent.name, c.name)",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c2_02",
+        "split": "challenge",
+        "tier": "hard_sql",
+        "question": "How many orders were placed in each month of 2026 that has at least one order? Show the month number (1 to 12) and the count.",
+        "reference_sql": "SELECT EXTRACT(MONTH FROM order_date), COUNT(*) FROM orders WHERE order_date >= '2026-01-01' AND order_date < '2027-01-01' GROUP BY 1",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c2_03",
+        "split": "challenge",
+        "tier": "hard_sql",
+        "question": "For each product category, which product has the highest total sales, where sales is the sum of quantity times unit price from order items? Show the category name, the product name, and the total sales.",
+        "reference_sql": "SELECT category_name, product_name, total_sales FROM (SELECT c.name AS category_name, p.name AS product_name, SUM(oi.quantity * oi.unit_price) AS total_sales, RANK() OVER (PARTITION BY c.name ORDER BY SUM(oi.quantity * oi.unit_price) DESC) AS rnk FROM order_items oi JOIN products p ON oi.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id GROUP BY c.name, p.name) t WHERE rnk = 1",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c2_04",
+        "split": "challenge",
+        "tier": "hard_sql",
+        "question": "What percentage of delivered orders had at least one returned item? Round to 2 decimal places.",
+        "reference_sql": "SELECT ROUND(100.0 * COUNT(DISTINCT CASE WHEN r.return_id IS NOT NULL THEN o.order_id END) / COUNT(DISTINCT o.order_id), 2) FROM orders o LEFT JOIN order_items oi ON oi.order_id = o.order_id LEFT JOIN returns r ON r.order_item_id = oi.order_item_id WHERE o.status = 'delivered'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c2_05",
+        "split": "challenge",
+        "tier": "hard_sql",
+        "question": "How many customers have a total of paid payments that is above the average customer total? Only count payments with a status of paid, and average over customers who have at least one paid payment.",
+        "reference_sql": "SELECT COUNT(*) FROM (SELECT o.customer_id, SUM(p.amount) AS total FROM payments p JOIN orders o ON p.order_id = o.order_id WHERE p.payment_status = 'paid' GROUP BY o.customer_id) t WHERE total > (SELECT AVG(total2) FROM (SELECT SUM(p2.amount) AS total2 FROM payments p2 JOIN orders o2 ON p2.order_id = o2.order_id WHERE p2.payment_status = 'paid' GROUP BY o2.customer_id) x)",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "c2_06",
+        "split": "challenge",
+        "tier": "hard_sql",
+        "question": "How many customers placed orders in both January 2026 and February 2026?",
+        "reference_sql": "SELECT COUNT(*) FROM (SELECT customer_id FROM orders WHERE order_date >= '2026-01-01' AND order_date < '2026-02-01' INTERSECT SELECT customer_id FROM orders WHERE order_date >= '2026-02-01' AND order_date < '2026-03-01') t",
+        "ordered": false,
+        "expect_clarification": false
     }
 ]

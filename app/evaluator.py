@@ -211,7 +211,7 @@ if __name__ == "__main__":
     # Default to dev so the test split is never run by accident
     chosen_split = sys.argv[1] if len(sys.argv) > 1 else "dev"
 
-    if chosen_split not in ("dev", "test", "all"):
-        raise SystemExit("Split must be dev, test, or all.")
+    if chosen_split not in ("dev", "test", "challenge", "all"):
+        raise SystemExit("Split must be dev, test, challenge, or all.")
 
     run_evaluation(chosen_split)
