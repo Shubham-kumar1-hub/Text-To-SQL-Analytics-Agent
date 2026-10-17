@@ -117,16 +117,6 @@ def generate_error_answer_node(state):
         )
     }
 
-def generate_error_answer_node(state):
-    """ Returns  clear message after every allowed SQL attempt has failed."""
-
-    return {
-        "answer": (
-            "I could not create a valid query for this question after "
-            f"{state['attempts']} attempts. Database error: {state['error']}"
-        )
-    }
-
 def decide_next_setps(state):
     """ Decide whether to retry SQL generation or return an error answer."""
 
