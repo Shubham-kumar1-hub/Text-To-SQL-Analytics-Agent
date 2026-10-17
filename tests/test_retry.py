@@ -43,6 +43,26 @@ class RetryWorkflowTest(unittest.TestCase):
         self.assertIn("result", response)
         self.assertIn("answer", response)
 
+    def test_agent_retries_after_validation_error(self):
+        calls = 0
+
+        def fail_once_then_work(question, error_message=None):
+            """First call mimics a validator rejection, second returns valid SQL."""
+            nonlocal calls
+            calls += 1
+
+            if calls == 1:
+                raise ValueError("Only read only SELECT queries are allowed.")
+
+            return "SELECT COUNT(*) FROM customers"
+
+        with patch("app.agent.generate_sql", side_effect=fail_once_then_work):
+            response = run_agent("How many customers are there?")
+
+        # One validation failure should cause exactly one retry
+        self.assertEqual(response["attempts"], 2)
+        self.assertIn("result", response)
+
 
 if __name__ == "__main__":
     unittest.main()

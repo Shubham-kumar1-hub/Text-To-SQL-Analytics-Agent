@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-10-17T17:02:10.594952+05:30",
+  "evaluated_at": "2026-10-17T18:42:59.730428+05:30",
   "split": "dev",
   "passed_cases": 20,
   "total_cases": 20,
@@ -55,7 +55,7 @@
       "question": "What is the average product price, rounded to 2 decimal places?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT ROUND(AVG(price), 2) AS average_price FROM products",
+      "generated_sql": "SELECT ROUND(CAST(AVG(price) AS DECIMAL), 2) AS average_price FROM products",
       "agent_answer": "The average product price is **13263.89**.",
       "expected_rows": [
         {
@@ -76,8 +76,8 @@
       "question": "List the coupon codes that give a discount of 15 percent or more.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT code FROM coupons WHERE discount_percent >= 15 LIMIT 20",
-      "agent_answer": "- FESTIVE20  \n- SAVE15  \n- FLASH25",
+      "generated_sql": "SELECT code FROM coupons WHERE discount_percent >= 15",
+      "agent_answer": "The coupon codes with a discount of\u202f15\u202fpercent or more are:\n\n- FESTIVE20  \n- SAVE15  \n- FLASH25",
       "expected_rows": [
         {
           "code": "FESTIVE20"
@@ -109,7 +109,7 @@
       "question": "How many payments were made by UPI?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(*) AS upi_payments FROM payments WHERE method = 'upi'",
+      "generated_sql": "SELECT COUNT(*) AS upi_payment_count FROM payments WHERE method = 'upi'",
       "agent_answer": "There were **395** payments made using UPI.",
       "expected_rows": [
         {
@@ -118,7 +118,7 @@
       ],
       "actual_rows": [
         {
-          "upi_payments": 395
+          "upi_payment_count": 395
         }
       ],
       "attempts": 1
@@ -130,7 +130,7 @@
       "question": "List the names of the products in the Footwear category.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT p.name FROM products AS p JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Footwear' LIMIT 20",
+      "generated_sql": "SELECT p.name FROM products AS p JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Footwear'",
       "agent_answer": "- Orbit Running Shoes  \n- Zenith Running Shoes  \n- Vivo Leather Sandals  \n- Urban Leather Sandals  \n- Pulse Sneakers  \n- Orbit Sneakers",
       "expected_rows": [
         {
@@ -181,8 +181,8 @@
       "question": "List the names of the brands that make products in the Mobiles category.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT DISTINCT b.name FROM brands AS b JOIN products AS p ON b.brand_id = p.brand_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Mobiles' LIMIT 20",
-      "agent_answer": "The brands with products in the **Mobiles** category are:\n\n- Bolt  \n- Kite  \n- Terra  \n- Vivo  \n- Zenith",
+      "generated_sql": "SELECT DISTINCT b.name FROM brands AS b JOIN products AS p ON b.brand_id = p.brand_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Mobiles'",
+      "agent_answer": "Bolt, Kite, Terra, Vivo, Zenith",
       "expected_rows": [
         {
           "name": "Bolt"
@@ -247,7 +247,7 @@
       "question": "List the names of the products whose stock quantity is below their reorder level.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT p.name FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id WHERE i.stock_quantity < i.reorder_level LIMIT 20",
+      "generated_sql": "SELECT p.name FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id WHERE i.stock_quantity < i.reorder_level",
       "agent_answer": "- Apex Denim Jacket  \n- Pulse Sneakers",
       "expected_rows": [
         {
@@ -274,8 +274,8 @@
       "question": "How many customers are in each loyalty tier? Show the tier and the count.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT loyalty_tier, COUNT(*) AS customer_count FROM customers GROUP BY loyalty_tier ORDER BY loyalty_tier LIMIT 20",
-      "agent_answer": "**Loyalty Tier \u2013 Customer Count**\n\n- bronze: 145  \n- gold: 16  \n- silver: 39",
+      "generated_sql": "SELECT loyalty_tier AS tier, COUNT(*) AS count FROM customers GROUP BY loyalty_tier",
+      "agent_answer": "- Silver: 39 customers  \n- Bronze: 145 customers  \n- Gold: 16 customers",
       "expected_rows": [
         {
           "loyalty_tier": "silver",
@@ -292,16 +292,16 @@
       ],
       "actual_rows": [
         {
-          "loyalty_tier": "bronze",
-          "customer_count": 145
+          "tier": "silver",
+          "count": 39
         },
         {
-          "loyalty_tier": "gold",
-          "customer_count": 16
+          "tier": "bronze",
+          "count": 145
         },
         {
-          "loyalty_tier": "silver",
-          "customer_count": 39
+          "tier": "gold",
+          "count": 16
         }
       ],
       "attempts": 1
@@ -313,8 +313,8 @@
       "question": "What is the average review rating for each category that has at least one review? Show the category name and the average rating rounded to 2 decimal places.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT c.name AS category_name, ROUND(CAST(AVG(r.rating) AS DECIMAL), 2) AS average_rating FROM reviews AS r JOIN products AS p ON r.product_id = p.product_id JOIN categories AS c ON p.category_id = c.category_id GROUP BY c.name HAVING COUNT(r.review_id) > 0 ORDER BY c.name LIMIT 20",
-      "agent_answer": "**Average Review Ratings by Category**\n\n| Category | Average Rating |\n|----------|----------------|\n| Books | 3.87 |\n| Cookware | 3.96 |\n| Fitness Equipment | 3.74 |\n| Footwear | 3.72 |\n| Furniture | 4.16 |\n| Headphones | 3.75 |\n| Laptops | 3.73 |\n| Men's Clothing | 3.88 |\n| Mobiles | 4.20 |\n| Women's Clothing | 3.98 |",
+      "generated_sql": "SELECT c.name AS category_name, ROUND(CAST(AVG(r.rating) AS DECIMAL), 2) AS average_rating FROM reviews AS r JOIN products AS p ON r.product_id = p.product_id JOIN categories AS c ON p.category_id = c.category_id GROUP BY c.name",
+      "agent_answer": "**Average Review Rating by Category**\n\n- Furniture: 4.16  \n- Women's Clothing: 3.98  \n- Footwear: 3.72  \n- Men's Clothing: 3.88  \n- Cookware: 3.96  \n- Laptops: 3.73  \n- Fitness Equipment: 3.74  \n- Books: 3.87  \n- Mobiles: 4.20  \n- Headphones: 3.75",
       "expected_rows": [
         {
           "name": "Furniture",
@@ -359,44 +359,44 @@
       ],
       "actual_rows": [
         {
-          "category_name": "Books",
-          "average_rating": "3.87"
+          "category_name": "Furniture",
+          "average_rating": "4.16"
         },
         {
-          "category_name": "Cookware",
-          "average_rating": "3.96"
-        },
-        {
-          "category_name": "Fitness Equipment",
-          "average_rating": "3.74"
+          "category_name": "Women's Clothing",
+          "average_rating": "3.98"
         },
         {
           "category_name": "Footwear",
           "average_rating": "3.72"
         },
         {
-          "category_name": "Furniture",
-          "average_rating": "4.16"
+          "category_name": "Men's Clothing",
+          "average_rating": "3.88"
         },
         {
-          "category_name": "Headphones",
-          "average_rating": "3.75"
+          "category_name": "Cookware",
+          "average_rating": "3.96"
         },
         {
           "category_name": "Laptops",
           "average_rating": "3.73"
         },
         {
-          "category_name": "Men's Clothing",
-          "average_rating": "3.88"
+          "category_name": "Fitness Equipment",
+          "average_rating": "3.74"
+        },
+        {
+          "category_name": "Books",
+          "average_rating": "3.87"
         },
         {
           "category_name": "Mobiles",
           "average_rating": "4.20"
         },
         {
-          "category_name": "Women's Clothing",
-          "average_rating": "3.98"
+          "category_name": "Headphones",
+          "average_rating": "3.75"
         }
       ],
       "attempts": 1
@@ -408,8 +408,8 @@
       "question": "What is the total quantity of items ordered for each order status? Show the status and the total quantity.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT o.status, SUM(oi.quantity) AS total_quantity FROM orders AS o JOIN order_items AS oi ON o.order_id = oi.order_id GROUP BY o.status ORDER BY o.status LIMIT 20",
-      "agent_answer": "**Total quantity of items by order status**\n\n- cancelled: 759  \n- delivered: 5,215  \n- placed: 533  \n- shipped: 1,031",
+      "generated_sql": "SELECT o.status, SUM(oi.quantity) AS total_quantity FROM orders AS o JOIN order_items AS oi ON o.order_id = oi.order_id GROUP BY o.status",
+      "agent_answer": "**Total quantity of items by order status**\n\n- shipped: 1,031  \n- cancelled: 759  \n- placed: 533  \n- delivered: 5,215",
       "expected_rows": [
         {
           "status": "shipped",
@@ -430,20 +430,20 @@
       ],
       "actual_rows": [
         {
-          "status": "cancelled",
-          "total_quantity": 759
+          "status": "shipped",
+          "total_quantity": 1031
         },
         {
-          "status": "delivered",
-          "total_quantity": 5215
+          "status": "cancelled",
+          "total_quantity": 759
         },
         {
           "status": "placed",
           "total_quantity": 533
         },
         {
-          "status": "shipped",
-          "total_quantity": 1031
+          "status": "delivered",
+          "total_quantity": 5215
         }
       ],
       "attempts": 1
@@ -455,8 +455,8 @@
       "question": "How many payments are there for each payment method? Show the method and the count.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT method, COUNT(*) AS payment_count FROM payments GROUP BY method LIMIT 20",
-      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| card        | 366 |\n| cod         | 370 |\n| netbanking  | 369 |",
+      "generated_sql": "SELECT method, COUNT(*) AS count FROM payments GROUP BY method",
+      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| card        | 366 |\n| cod         | 370 |\n| netbanking  | 369 |\n\nThese numbers represent the total number of payments made with each payment method.",
       "expected_rows": [
         {
           "method": "upi",
@@ -478,19 +478,19 @@
       "actual_rows": [
         {
           "method": "upi",
-          "payment_count": 395
+          "count": 395
         },
         {
           "method": "card",
-          "payment_count": 366
+          "count": 366
         },
         {
           "method": "cod",
-          "payment_count": 370
+          "count": 370
         },
         {
           "method": "netbanking",
-          "payment_count": 369
+          "count": 369
         }
       ],
       "attempts": 1
@@ -523,7 +523,7 @@
       "question": "How many customers signed up before 1 January 2025?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(*) AS customer_count FROM customers WHERE signup_date < CAST('2025-01-01' AS DATE)",
+      "generated_sql": "SELECT COUNT(*) FROM customers WHERE signup_date < CAST('2025-01-01' AS DATE)",
       "agent_answer": "85 customers signed up before\u202f1\u202fJanuary\u202f2025.",
       "expected_rows": [
         {
@@ -532,7 +532,7 @@
       ],
       "actual_rows": [
         {
-          "customer_count": 85
+          "count": 85
         }
       ],
       "attempts": 1
@@ -544,7 +544,7 @@
       "question": "How many customers have never written a review?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(*) AS customers_without_reviews FROM customers AS c LEFT JOIN reviews AS r ON c.customer_id = r.customer_id WHERE r.review_id IS NULL",
+      "generated_sql": "SELECT COUNT(*) AS customers_without_reviews FROM customers AS c WHERE NOT EXISTS(SELECT 1 FROM reviews AS r WHERE r.customer_id = c.customer_id)",
       "agent_answer": "19 customers have never written a review.",
       "expected_rows": [
         {
@@ -587,7 +587,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": null,
-      "agent_answer": "What metric should be used to define \u201cperforms best\u201d (e.g., revenue, units sold, profit, conversion rate, etc.)?",
+      "agent_answer": "What metric should be used to define \u201cperforms best\u201d (e.g., total sales, revenue, profit, number of orders, etc.)?",
       "expected_rows": [],
       "actual_rows": [],
       "attempts": 0
@@ -612,8 +612,8 @@
       "question": "Which loyalty tier has the most customers?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT loyalty_tier FROM customers GROUP BY loyalty_tier ORDER BY COUNT(*) DESC LIMIT 1",
-      "agent_answer": "The **bronze** loyalty tier has the most customers.",
+      "generated_sql": "SELECT loyalty_tier, COUNT(*) AS customer_count FROM customers GROUP BY loyalty_tier ORDER BY customer_count DESC LIMIT 1",
+      "agent_answer": "The loyalty tier with the most customers is **bronze**, with 145 customers.",
       "expected_rows": [
         {
           "loyalty_tier": "bronze"
@@ -621,7 +621,8 @@
       ],
       "actual_rows": [
         {
-          "loyalty_tier": "bronze"
+          "loyalty_tier": "bronze",
+          "customer_count": 145
         }
       ],
       "attempts": 1
