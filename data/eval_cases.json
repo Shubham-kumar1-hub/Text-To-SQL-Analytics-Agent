@@ -1,0 +1,92 @@
+[
+    {
+        "id": "t1_01",
+        "split": "dev",
+        "tier": "single_table",
+        "question": "How many customers have the gold loyalty tier?",
+        "reference_sql": "SELECT COUNT(*) FROM customers WHERE loyalty_tier = 'gold'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_02",
+        "split": "dev",
+        "tier": "single_table",
+        "question": "What is the average product price, rounded to 2 decimal places?",
+        "reference_sql": "SELECT ROUND(AVG(price), 2) FROM products",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_03",
+        "split": "dev",
+        "tier": "single_table",
+        "question": "List the coupon codes that give a discount of 15 percent or more.",
+        "reference_sql": "SELECT code FROM coupons WHERE discount_percent >= 15",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_04",
+        "split": "dev",
+        "tier": "single_table",
+        "question": "How many payments were made by UPI?",
+        "reference_sql": "SELECT COUNT(*) FROM payments WHERE method = 'upi'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_05",
+        "split": "test",
+        "tier": "single_table",
+        "question": "How many products are inactive?",
+        "reference_sql": "SELECT COUNT(*) FROM products WHERE is_active = FALSE",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_06",
+        "split": "test",
+        "tier": "single_table",
+        "question": "List the names of all brands from Germany.",
+        "reference_sql": "SELECT name FROM brands WHERE country = 'Germany'",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_07",
+        "split": "test",
+        "tier": "single_table",
+        "question": "How many reviews have a rating of 1 or 2?",
+        "reference_sql": "SELECT COUNT(*) FROM reviews WHERE rating <= 2",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_08",
+        "split": "test",
+        "tier": "single_table",
+        "question": "List the names and prices of the 3 cheapest products.",
+        "reference_sql": "SELECT name, price FROM products ORDER BY price ASC LIMIT 3",
+        "ordered": true,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_09",
+        "split": "test",
+        "tier": "single_table",
+        "question": "What is the total stock quantity across all products?",
+        "reference_sql": "SELECT SUM(stock_quantity) FROM inventory",
+        "ordered": false,
+        "expect_clarification": false
+    },
+    {
+        "id": "t1_10",
+        "split": "test",
+        "tier": "single_table",
+        "question": "How many products have a price above 10000?",
+        "reference_sql": "SELECT COUNT(*) FROM products WHERE price > 10000",
+        "ordered": false,
+        "expect_clarification": false
+    }
+]
