@@ -53,17 +53,25 @@ def generate_clarification_node(state):
 
 
 def generate_sql_node(state):
-    """Generate Validatd SQL using an error message if this is a retry."""
+    """Generating Validatd SQL using an error message if this is a retry."""
 
-    sql_query = generate_sql(
-        question=state["question"],
-        error_message=state.get("error"),
-    )
+    attempts = state.get("attempts", 0) + 1
+
+    try:
+
+        sql_query = generate_sql(
+            question=state["question"],
+            error_message=state.get("error"),
+        )
+
+    except Exception as error:
+        # A validation or generation failure is sent back so the graph can retry
+        return {"sql": "", "error": str(error), "attempts": attempts}
 
     return {
         "sql": sql_query,
         "error": "",
-        "attempts": state.get("attempts", 0) + 1,
+        "attempts": attempts,
     }
 
 def execute_sql_node(state):
@@ -114,6 +122,18 @@ def decide_next_setps(state):
     return "generate_error_answer"
 
 
+def decide_after_generation(state):
+    """ If SQL generation itself failed, retry or give up. Otherwiserun the SQL"""
+
+    if not state.get("error"):
+        return "execute_sql"
+
+    if state.get("attempts", 0) < MAX_SQL_ATTEMPTS:
+        return "generate_sql"
+
+    return "generate_error_answer"
+
+
 # Building the LangGraph workflow
 
 workflow = StateGraph(AgentState)
@@ -139,7 +159,16 @@ workflow.add_conditional_edges(
 )
 
 workflow.add_edge("generate_clarification", END)
-workflow.add_edge("generate_sql", "execute_sql")
+# After generating SQL, run it, unless generation itself failed
+workflow.add_conditional_edges(
+    "generate_sql",
+    decide_after_generation,
+    {
+        "execute_sql": "execute_sql",
+        "generate_sql": "generate_sql",
+        "generate_error_answer": "generate_error_answer",
+    },
+)
 
 # After execution, we decide wheteher to retry SQL generation or generate an error answer.
 workflow.add_conditional_edges(
