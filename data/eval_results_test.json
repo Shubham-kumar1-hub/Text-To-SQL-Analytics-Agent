@@ -1,0 +1,991 @@
+{
+  "evaluated_at": "2026-10-17T22:26:14.548949+05:30",
+  "split": "test",
+  "passed_cases": 30,
+  "total_cases": 30,
+  "execution_accuracy_percent": 100.0,
+  "by_tier": {
+    "single_table": {
+      "passed": 6,
+      "total": 6
+    },
+    "joins": {
+      "passed": 6,
+      "total": 6
+    },
+    "aggregation": {
+      "passed": 6,
+      "total": 6
+    },
+    "dates_subqueries": {
+      "passed": 6,
+      "total": 6
+    },
+    "ambiguity": {
+      "passed": 6,
+      "total": 6
+    }
+  },
+  "results": [
+    {
+      "id": "t1_05",
+      "split": "test",
+      "tier": "single_table",
+      "question": "How many products are inactive?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS inactive_product_count FROM products WHERE is_active = FALSE",
+      "agent_answer": "There are **2** inactive products.",
+      "expected_rows": [
+        {
+          "count": 2
+        }
+      ],
+      "actual_rows": [
+        {
+          "inactive_product_count": 2
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_06",
+      "split": "test",
+      "tier": "single_table",
+      "question": "List the names of all brands from Germany.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT name FROM brands WHERE country = 'Germany'",
+      "agent_answer": "Aero",
+      "expected_rows": [
+        {
+          "name": "Aero"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Aero"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_07",
+      "split": "test",
+      "tier": "single_table",
+      "question": "How many reviews have a rating of 1 or 2?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS review_count FROM reviews WHERE rating IN (1, 2)",
+      "agent_answer": "There are **62** reviews with a rating of\u202f1 or\u202f2.",
+      "expected_rows": [
+        {
+          "count": 62
+        }
+      ],
+      "actual_rows": [
+        {
+          "review_count": 62
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_08",
+      "split": "test",
+      "tier": "single_table",
+      "question": "List the names and prices of the 3 cheapest products.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT name, price FROM products ORDER BY price ASC LIMIT 3",
+      "agent_answer": "- Pulse Fiction Novel \u2013 251.75  \n- Pulse Self-Help Book \u2013 300.46  \n- Vivo Cotton T-Shirt \u2013 410.63",
+      "expected_rows": [
+        {
+          "name": "Pulse Fiction Novel",
+          "price": "251.75"
+        },
+        {
+          "name": "Pulse Self-Help Book",
+          "price": "300.46"
+        },
+        {
+          "name": "Vivo Cotton T-Shirt",
+          "price": "410.63"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Pulse Fiction Novel",
+          "price": "251.75"
+        },
+        {
+          "name": "Pulse Self-Help Book",
+          "price": "300.46"
+        },
+        {
+          "name": "Vivo Cotton T-Shirt",
+          "price": "410.63"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_09",
+      "split": "test",
+      "tier": "single_table",
+      "question": "What is the total stock quantity across all products?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT SUM(stock_quantity) AS total_stock_quantity FROM inventory",
+      "agent_answer": "The total stock quantity across all products is **9,591** units.",
+      "expected_rows": [
+        {
+          "sum": 9591
+        }
+      ],
+      "actual_rows": [
+        {
+          "total_stock_quantity": 9591
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t1_10",
+      "split": "test",
+      "tier": "single_table",
+      "question": "How many products have a price above 10000?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) FROM products WHERE price > 10000",
+      "agent_answer": "There are **19** products with a price greater than\u202f10,000.",
+      "expected_rows": [
+        {
+          "count": 19
+        }
+      ],
+      "actual_rows": [
+        {
+          "count": 19
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_05",
+      "split": "test",
+      "tier": "joins",
+      "question": "How many delivered orders were sent with the DTDC carrier?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS delivered_orders_count FROM shipments AS s JOIN orders AS o ON s.order_id = o.order_id WHERE s.carrier = 'DTDC' AND o.status = 'delivered'",
+      "agent_answer": "There were **237** delivered orders shipped with the DTDC carrier.",
+      "expected_rows": [
+        {
+          "count": 237
+        }
+      ],
+      "actual_rows": [
+        {
+          "delivered_orders_count": 237
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_06",
+      "split": "test",
+      "tier": "joins",
+      "question": "List the names of the products that have at least one review with a rating of 1.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT DISTINCT p.name FROM products AS p JOIN reviews AS r ON p.product_id = r.product_id WHERE r.rating = 1",
+      "agent_answer": "- Pulse Resistance Bands  \n- Vivo Programming Book  \n- Pulse Kurti  \n- Pulse Programming Book  \n- Vivo Gaming Laptop  \n- Terra Smartphone 5G  \n- Apex Summer Dress  \n- Pulse Ultrabook  \n- Kite Over-Ear Headphones  \n- Bolt Wireless Earbuds  \n- Apex Student Laptop  \n- Terra Over-Ear Headphones  \n- Zenith Ultrabook  \n- Pulse Fiction Novel  \n- Pulse Sneakers  \n- Urban Cotton T\u2011Shirt  \n- Aero Formal Shirt  \n- Urban Leather Sandals  \n- Zenith Resistance Bands  \n- Bolt Flagship Phone  \n- Vivo Cotton T\u2011Shirt",
+      "expected_rows": [
+        {
+          "name": "Pulse Resistance Bands"
+        },
+        {
+          "name": "Vivo Programming Book"
+        },
+        {
+          "name": "Pulse Kurti"
+        },
+        {
+          "name": "Pulse Programming Book"
+        },
+        {
+          "name": "Vivo Gaming Laptop"
+        },
+        {
+          "name": "Terra Smartphone 5G"
+        },
+        {
+          "name": "Apex Summer Dress"
+        },
+        {
+          "name": "Pulse Ultrabook"
+        },
+        {
+          "name": "Kite Over-Ear Headphones"
+        },
+        {
+          "name": "Bolt Wireless Earbuds"
+        },
+        {
+          "name": "Apex Student Laptop"
+        },
+        {
+          "name": "Terra Over-Ear Headphones"
+        },
+        {
+          "name": "Zenith Ultrabook"
+        },
+        {
+          "name": "Pulse Fiction Novel"
+        },
+        {
+          "name": "Pulse Sneakers"
+        },
+        {
+          "name": "Urban Cotton T-Shirt"
+        },
+        {
+          "name": "Aero Formal Shirt"
+        },
+        {
+          "name": "Urban Leather Sandals"
+        },
+        {
+          "name": "Zenith Resistance Bands"
+        },
+        {
+          "name": "Bolt Flagship Phone"
+        },
+        {
+          "name": "Vivo Cotton T-Shirt"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Pulse Resistance Bands"
+        },
+        {
+          "name": "Vivo Programming Book"
+        },
+        {
+          "name": "Pulse Kurti"
+        },
+        {
+          "name": "Pulse Programming Book"
+        },
+        {
+          "name": "Vivo Gaming Laptop"
+        },
+        {
+          "name": "Terra Smartphone 5G"
+        },
+        {
+          "name": "Apex Summer Dress"
+        },
+        {
+          "name": "Pulse Ultrabook"
+        },
+        {
+          "name": "Kite Over-Ear Headphones"
+        },
+        {
+          "name": "Bolt Wireless Earbuds"
+        },
+        {
+          "name": "Apex Student Laptop"
+        },
+        {
+          "name": "Terra Over-Ear Headphones"
+        },
+        {
+          "name": "Zenith Ultrabook"
+        },
+        {
+          "name": "Pulse Fiction Novel"
+        },
+        {
+          "name": "Pulse Sneakers"
+        },
+        {
+          "name": "Urban Cotton T-Shirt"
+        },
+        {
+          "name": "Aero Formal Shirt"
+        },
+        {
+          "name": "Urban Leather Sandals"
+        },
+        {
+          "name": "Zenith Resistance Bands"
+        },
+        {
+          "name": "Bolt Flagship Phone"
+        },
+        {
+          "name": "Vivo Cotton T-Shirt"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_07",
+      "split": "test",
+      "tier": "joins",
+      "question": "What is the total refund amount of returned items for products in the Laptops category?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COALESCE(SUM(r.refund_amount), 0) AS total_refund FROM returns AS r JOIN order_items AS oi ON r.order_item_id = oi.order_item_id JOIN products AS p ON oi.product_id = p.product_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Laptops'",
+      "agent_answer": "The total refund amount for returned laptop items is **2,680,685.54**.",
+      "expected_rows": [
+        {
+          "sum": "2680685.54"
+        }
+      ],
+      "actual_rows": [
+        {
+          "total_refund": "2680685.54"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_08",
+      "split": "test",
+      "tier": "joins",
+      "question": "List the email addresses of customers who gave a rating of 5 to the product named Pulse Sneakers.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT DISTINCT c.email FROM customers AS c JOIN reviews AS r ON c.customer_id = r.customer_id JOIN products AS p ON r.product_id = p.product_id WHERE r.rating = 5 AND p.name = 'Pulse Sneakers'",
+      "agent_answer": "user133@hotmail.com  \nuser165@hotmail.com  \nuser82@gmail.com",
+      "expected_rows": [
+        {
+          "email": "user165@hotmail.com"
+        },
+        {
+          "email": "user133@hotmail.com"
+        },
+        {
+          "email": "user82@gmail.com"
+        }
+      ],
+      "actual_rows": [
+        {
+          "email": "user133@hotmail.com"
+        },
+        {
+          "email": "user165@hotmail.com"
+        },
+        {
+          "email": "user82@gmail.com"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_09",
+      "split": "test",
+      "tier": "joins",
+      "question": "What is the name of the supplier of the most expensive product?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT s.name FROM suppliers AS s JOIN products AS p ON s.supplier_id = p.supplier_id WHERE p.price = (SELECT MAX(price) FROM products)",
+      "agent_answer": "The supplier of the most expensive product is **Balakrishnan, Ghose and Hans**.",
+      "expected_rows": [
+        {
+          "name": "Balakrishnan, Ghose and Hans"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Balakrishnan, Ghose and Hans"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t2_10",
+      "split": "test",
+      "tier": "joins",
+      "question": "How many orders used a coupon with a discount of 20 percent or more?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(DISTINCT oc.order_id) AS order_count FROM order_coupons AS oc JOIN coupons AS c ON oc.coupon_id = c.coupon_id WHERE c.discount_percent >= 20",
+      "agent_answer": "112 orders used a coupon with a discount of\u202f20\u202fpercent or higher.",
+      "expected_rows": [
+        {
+          "count": 112
+        }
+      ],
+      "actual_rows": [
+        {
+          "order_count": 112
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_05",
+      "split": "test",
+      "tier": "aggregation",
+      "question": "Which payment method has the highest total amount among payments with a status of paid? Show the method and the total amount.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT method, SUM(amount) AS total_amount FROM payments WHERE payment_status = 'paid' GROUP BY method ORDER BY total_amount DESC LIMIT 1",
+      "agent_answer": "The payment method with the highest total amount for paid payments is **upi**, with a total amount of **26517555.97**.",
+      "expected_rows": [
+        {
+          "method": "upi",
+          "sum": "26517555.97"
+        }
+      ],
+      "actual_rows": [
+        {
+          "method": "upi",
+          "total_amount": "26517555.97"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_06",
+      "split": "test",
+      "tier": "aggregation",
+      "question": "What are the 3 categories with the highest total sales, where sales is the sum of quantity times unit price from order items? Show the category name and the total sales.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT c.name AS category_name, SUM(oi.quantity * oi.unit_price) AS total_sales FROM order_items AS oi JOIN products AS p ON oi.product_id = p.product_id JOIN categories AS c ON p.category_id = c.category_id GROUP BY c.category_id, c.name ORDER BY total_sales DESC LIMIT 3",
+      "agent_answer": "**Top 3 categories by total sales**\n\n- Laptops \u2013 50440073.74  \n- Mobiles \u2013 26919872.75  \n- Headphones \u2013 7119123.39",
+      "expected_rows": [
+        {
+          "name": "Laptops",
+          "sum": "50440073.74"
+        },
+        {
+          "name": "Mobiles",
+          "sum": "26919872.75"
+        },
+        {
+          "name": "Headphones",
+          "sum": "7119123.39"
+        }
+      ],
+      "actual_rows": [
+        {
+          "category_name": "Laptops",
+          "total_sales": "50440073.74"
+        },
+        {
+          "category_name": "Mobiles",
+          "total_sales": "26919872.75"
+        },
+        {
+          "category_name": "Headphones",
+          "total_sales": "7119123.39"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_07",
+      "split": "test",
+      "tier": "aggregation",
+      "question": "Which customers have placed more than 12 orders? Show the customer id and the number of orders.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT o.customer_id, COUNT(*) AS order_count FROM orders AS o GROUP BY o.customer_id HAVING COUNT(*) > 12",
+      "agent_answer": "Here are the customers who have placed more than\u202f12\u202forders:\n\n| Customer ID | Number of Orders |\n|-------------|------------------|\n| 117 | 14 |\n| 147 | 13 |\n| 102 | 14 |\n| 109 | 13 |\n| 41  | 14 |\n| 94  | 13 |\n| 20  | 14 |\n| 185 | 15 |",
+      "expected_rows": [
+        {
+          "customer_id": 117,
+          "count": 14
+        },
+        {
+          "customer_id": 147,
+          "count": 13
+        },
+        {
+          "customer_id": 102,
+          "count": 14
+        },
+        {
+          "customer_id": 109,
+          "count": 13
+        },
+        {
+          "customer_id": 41,
+          "count": 14
+        },
+        {
+          "customer_id": 94,
+          "count": 13
+        },
+        {
+          "customer_id": 20,
+          "count": 14
+        },
+        {
+          "customer_id": 185,
+          "count": 15
+        }
+      ],
+      "actual_rows": [
+        {
+          "customer_id": 117,
+          "order_count": 14
+        },
+        {
+          "customer_id": 147,
+          "order_count": 13
+        },
+        {
+          "customer_id": 102,
+          "order_count": 14
+        },
+        {
+          "customer_id": 109,
+          "order_count": 13
+        },
+        {
+          "customer_id": 41,
+          "order_count": 14
+        },
+        {
+          "customer_id": 94,
+          "order_count": 13
+        },
+        {
+          "customer_id": 20,
+          "order_count": 14
+        },
+        {
+          "customer_id": 185,
+          "order_count": 15
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_08",
+      "split": "test",
+      "tier": "aggregation",
+      "question": "What is the average payment amount for each payment status? Show the status and the average amount rounded to 2 decimal places.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT payment_status, ROUND(AVG(amount), 2) AS average_amount FROM payments GROUP BY payment_status",
+      "agent_answer": "**Average payment amount by status**\n\n- paid: 66695.59  \n- failed: 63269.77  \n- refunded: 63274.03",
+      "expected_rows": [
+        {
+          "payment_status": "paid",
+          "round": "66695.59"
+        },
+        {
+          "payment_status": "failed",
+          "round": "63269.77"
+        },
+        {
+          "payment_status": "refunded",
+          "round": "63274.03"
+        }
+      ],
+      "actual_rows": [
+        {
+          "payment_status": "paid",
+          "average_amount": "66695.59"
+        },
+        {
+          "payment_status": "failed",
+          "average_amount": "63269.77"
+        },
+        {
+          "payment_status": "refunded",
+          "average_amount": "63274.03"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_09",
+      "split": "test",
+      "tier": "aggregation",
+      "question": "Which brands have at least 6 products? Show the brand name and the number of products.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT b.name AS brand_name, COUNT(p.product_id) AS product_count FROM brands AS b JOIN products AS p ON b.brand_id = p.brand_id GROUP BY b.name HAVING COUNT(p.product_id) >= 6",
+      "agent_answer": "Here are the brands that have six or more products:\n\n- Zenith \u2013 7 products  \n- Vivo \u2013 6 products  \n- Apex \u2013 7 products  \n- Urban \u2013 6 products  \n- Pulse \u2013 11 products",
+      "expected_rows": [
+        {
+          "name": "Zenith",
+          "count": 7
+        },
+        {
+          "name": "Vivo",
+          "count": 6
+        },
+        {
+          "name": "Apex",
+          "count": 7
+        },
+        {
+          "name": "Urban",
+          "count": 6
+        },
+        {
+          "name": "Pulse",
+          "count": 11
+        }
+      ],
+      "actual_rows": [
+        {
+          "brand_name": "Zenith",
+          "product_count": 7
+        },
+        {
+          "brand_name": "Vivo",
+          "product_count": 6
+        },
+        {
+          "brand_name": "Apex",
+          "product_count": 7
+        },
+        {
+          "brand_name": "Urban",
+          "product_count": 6
+        },
+        {
+          "brand_name": "Pulse",
+          "product_count": 11
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t3_10",
+      "split": "test",
+      "tier": "aggregation",
+      "question": "What is the total refund amount for each return reason? Show the reason and the total refund amount.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT reason, SUM(refund_amount) AS total_refund FROM returns GROUP BY reason",
+      "agent_answer": "**Total refund amount by return reason**\n\n| Return Reason      | Total Refund Amount |\n|--------------------|---------------------|\n| Not as described   | 1033724.02 |\n| Defective          | 707973.82 |\n| Wrong size         | 1925212.79 |\n| Changed mind       | 493870.99 |",
+      "expected_rows": [
+        {
+          "reason": "Not as described",
+          "sum": "1033724.02"
+        },
+        {
+          "reason": "Defective",
+          "sum": "707973.82"
+        },
+        {
+          "reason": "Wrong size",
+          "sum": "1925212.79"
+        },
+        {
+          "reason": "Changed mind",
+          "sum": "493870.99"
+        }
+      ],
+      "actual_rows": [
+        {
+          "reason": "Not as described",
+          "total_refund": "1033724.02"
+        },
+        {
+          "reason": "Defective",
+          "total_refund": "707973.82"
+        },
+        {
+          "reason": "Wrong size",
+          "total_refund": "1925212.79"
+        },
+        {
+          "reason": "Changed mind",
+          "total_refund": "493870.99"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_05",
+      "split": "test",
+      "tier": "dates_subqueries",
+      "question": "What is the average number of days between the shipped date and the delivered date for delivered shipments, rounded to 2 decimal places?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT ROUND(AVG(delivered_date - shipped_date), 2) AS avg_delivery_days FROM shipments WHERE NOT delivered_date IS NULL",
+      "agent_answer": "The average time between the shipped date and the delivered date for delivered shipments is **4.58 days**.",
+      "expected_rows": [
+        {
+          "round": "4.58"
+        }
+      ],
+      "actual_rows": [
+        {
+          "avg_delivery_days": "4.58"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_06",
+      "split": "test",
+      "tier": "dates_subqueries",
+      "question": "List the names of products that cost more than the average product price and have a stock quantity below 50.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT p.name FROM products AS p JOIN inventory AS i ON p.product_id = i.product_id WHERE p.price > (SELECT AVG(price) FROM products) AND i.stock_quantity < 50",
+      "agent_answer": "- Zenith Ultrabook  \n- Pulse Ultrabook",
+      "expected_rows": [
+        {
+          "name": "Zenith Ultrabook"
+        },
+        {
+          "name": "Pulse Ultrabook"
+        }
+      ],
+      "actual_rows": [
+        {
+          "name": "Zenith Ultrabook"
+        },
+        {
+          "name": "Pulse Ultrabook"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_07",
+      "split": "test",
+      "tier": "dates_subqueries",
+      "question": "How many orders placed in 2026 were cancelled?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) FROM orders WHERE status = 'cancelled' AND EXTRACT(YEAR FROM order_date) = 2026",
+      "agent_answer": "There were **133** orders placed in 2026 that were cancelled.",
+      "expected_rows": [
+        {
+          "count": 133
+        }
+      ],
+      "actual_rows": [
+        {
+          "count": 133
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_08",
+      "split": "test",
+      "tier": "dates_subqueries",
+      "question": "What is the total amount of paid payments for orders placed between 1 January 2026 and 31 March 2026, including all of 31 March?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT SUM(p.amount) AS total_paid_amount FROM payments AS p JOIN orders AS o ON p.order_id = o.order_id WHERE p.payment_status = 'paid' AND o.order_date >= CAST('2026-01-01' AS DATE) AND o.order_date < CAST('2026-04-01' AS DATE)",
+      "agent_answer": "The total amount of paid payments for orders placed from\u202f1\u202fJanuary\u202f2026 through\u202f31\u202fMarch\u202f2026 is **19,870,593.21**.",
+      "expected_rows": [
+        {
+          "sum": "19870593.21"
+        }
+      ],
+      "actual_rows": [
+        {
+          "total_paid_amount": "19870593.21"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_09",
+      "split": "test",
+      "tier": "dates_subqueries",
+      "question": "How many different customers have placed orders that include a product from the Laptops category and also orders that include a product from the Mobiles category?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(DISTINCT c.customer_id) AS customer_count FROM customers AS c WHERE EXISTS(SELECT 1 FROM orders AS o JOIN order_items AS oi ON oi.order_id = o.order_id JOIN products AS p ON p.product_id = oi.product_id JOIN categories AS cat ON cat.category_id = p.category_id WHERE o.customer_id = c.customer_id AND cat.name = 'Laptops') AND EXISTS(SELECT 1 FROM orders AS o JOIN order_items AS oi ON oi.order_id = o.order_id JOIN products AS p ON p.product_id = oi.product_id JOIN categories AS cat ON cat.category_id = p.category_id WHERE o.customer_id = c.customer_id AND cat.name = 'Mobiles')",
+      "agent_answer": "138 different customers have placed orders that include both a laptop and a mobile product.",
+      "expected_rows": [
+        {
+          "count": 138
+        }
+      ],
+      "actual_rows": [
+        {
+          "customer_count": 138
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t4_10",
+      "split": "test",
+      "tier": "dates_subqueries",
+      "question": "Which customers have returned at least 3 items? Show the customer id and the number of returned items.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT c.customer_id, COUNT(r.return_id) AS returned_items FROM returns AS r JOIN order_items AS oi ON r.order_item_id = oi.order_item_id JOIN orders AS o ON oi.order_id = o.order_id JOIN customers AS c ON o.customer_id = c.customer_id GROUP BY c.customer_id HAVING COUNT(r.return_id) >= 3",
+      "agent_answer": "**Customers with\u202f\u2265\u202f3 returned items**\n\n| Customer ID | Returned Items |\n|-------------|----------------|\n| 11          | 3 |\n| 188         | 3 |\n| 194         | 3 |\n| 46          | 3 |\n| 94          | 4 |\n| 64          | 3 |\n| 8           | 4 |",
+      "expected_rows": [
+        {
+          "customer_id": 11,
+          "count": 3
+        },
+        {
+          "customer_id": 188,
+          "count": 3
+        },
+        {
+          "customer_id": 194,
+          "count": 3
+        },
+        {
+          "customer_id": 46,
+          "count": 3
+        },
+        {
+          "customer_id": 94,
+          "count": 4
+        },
+        {
+          "customer_id": 64,
+          "count": 3
+        },
+        {
+          "customer_id": 8,
+          "count": 4
+        }
+      ],
+      "actual_rows": [
+        {
+          "customer_id": 11,
+          "returned_items": 3
+        },
+        {
+          "customer_id": 188,
+          "returned_items": 3
+        },
+        {
+          "customer_id": 194,
+          "returned_items": 3
+        },
+        {
+          "customer_id": 46,
+          "returned_items": 3
+        },
+        {
+          "customer_id": 94,
+          "returned_items": 4
+        },
+        {
+          "customer_id": 64,
+          "returned_items": 3
+        },
+        {
+          "customer_id": 8,
+          "returned_items": 4
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t5_05",
+      "split": "test",
+      "tier": "ambiguity",
+      "question": "Which supplier is the most reliable?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": null,
+      "agent_answer": "How should we measure supplier reliability (e.g., on\u2011time delivery rate, defect rate, number of fulfilled orders, etc.)?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t5_06",
+      "split": "test",
+      "tier": "ambiguity",
+      "question": "What was our best month?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": null,
+      "agent_answer": "Which metric should define the \u201cbest\u201d month (e.g., total sales, number of orders, profit, etc.)?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t5_07",
+      "split": "test",
+      "tier": "ambiguity",
+      "question": "Which products are problematic?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": null,
+      "agent_answer": "How do you define a \"problematic\" product (e.g., high return rate, low rating, many complaints, etc.)?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t5_08",
+      "split": "test",
+      "tier": "ambiguity",
+      "question": "Which customers are likely to stop buying from us?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": null,
+      "agent_answer": "How would you define \u201clikely to stop buying\u201d \u2013 e.g., a churn probability threshold, a period of inactivity, or another specific metric?",
+      "expected_rows": [],
+      "actual_rows": [],
+      "attempts": 0
+    },
+    {
+      "id": "t5_09",
+      "split": "test",
+      "tier": "ambiguity",
+      "question": "Which order status is the most common?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT status FROM orders GROUP BY status ORDER BY COUNT(*) DESC LIMIT 1",
+      "agent_answer": "The most common order status is **delivered**.",
+      "expected_rows": [
+        {
+          "status": "delivered"
+        }
+      ],
+      "actual_rows": [
+        {
+          "status": "delivered"
+        }
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "t5_10",
+      "split": "test",
+      "tier": "ambiguity",
+      "question": "How many orders has customer 117 placed?",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders WHERE customer_id = 117",
+      "agent_answer": "Customer\u202f117 has placed **14 orders**.",
+      "expected_rows": [
+        {
+          "count": 14
+        }
+      ],
+      "actual_rows": [
+        {
+          "order_count": 14
+        }
+      ],
+      "attempts": 1
+    }
+  ]
+}
