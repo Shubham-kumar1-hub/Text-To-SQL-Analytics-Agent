@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-10-16T17:58:49.781104+05:30",
+  "evaluated_at": "2026-10-17T15:10:01.850574+05:30",
   "passed_cases": 5,
   "total_cases": 5,
   "execution_accuracy_percent": 100.0,
@@ -25,8 +25,8 @@
       "id": "count_delivered_orders",
       "question": "How many orders have been delivered?",
       "is_correct": true,
-      "generated_sql": "SELECT COUNT(*) FROM orders WHERE status = 'delivered'",
-      "agent_answer": "There are **1,040** orders with a status of \u201cdelivered.\u201d",
+      "generated_sql": "SELECT COUNT(*) AS delivered_orders_count FROM orders WHERE status = 'delivered'",
+      "agent_answer": "There have been **1,040** orders delivered.",
       "expected_rows": [
         {
           "delivered_order_count": 1040
@@ -34,7 +34,7 @@
       ],
       "actual_rows": [
         {
-          "count": 1040
+          "delivered_orders_count": 1040
         }
       ]
     },
@@ -103,8 +103,8 @@
       "id": "count_paid_payments",
       "question": "How many payments have been successfully paid?",
       "is_correct": true,
-      "generated_sql": "SELECT COUNT(*) FROM payments WHERE payment_status = 'paid'",
-      "agent_answer": "1337 payments have been successfully paid.",
+      "generated_sql": "SELECT COUNT(*) AS successful_payments FROM payments WHERE payment_status = 'paid'",
+      "agent_answer": "There have been **1,337** payments with a status of \u201cpaid.\u201d",
       "expected_rows": [
         {
           "paid_payment_count": 1337
@@ -112,7 +112,7 @@
       ],
       "actual_rows": [
         {
-          "count": 1337
+          "successful_payments": 1337
         }
       ]
     },
@@ -120,8 +120,8 @@
       "id": "top_five_low_stock_products",
       "question": "Which 5 products have the lowest stock quantity?",
       "is_correct": true,
-      "generated_sql": "SELECT i.product_id, p.name, i.stock_quantity FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id ORDER BY i.stock_quantity ASC LIMIT 5",
-      "agent_answer": "Here are the five products with the lowest stock levels:\n\n| Product | Stock Quantity |\n|---------|----------------|\n| Pulse Sneakers | 10 |\n| Apex Denim Jacket | 13 |\n| Vivo Summer Dress | 20 |\n| Urban Non\u2011stick Pan | 20 |\n| Pulse Ultrabook | 30 |",
+      "generated_sql": "SELECT p.product_id, p.name, i.stock_quantity FROM inventory AS i JOIN products AS p ON i.product_id = p.product_id ORDER BY i.stock_quantity ASC LIMIT 5",
+      "agent_answer": "Here are the five products with the lowest stock quantities:\n\n| Product ID | Product Name          | Stock Quantity |\n|------------|-----------------------|----------------|\n| 35         | Pulse Sneakers        | 10 |\n| 30         | Apex Denim Jacket     | 13 |\n| 26         | Vivo Summer Dress     | 20 |\n| 38         | Urban Non\u2011stick Pan   | 20 |\n| 10         | Pulse Ultrabook       | 30 |",
       "expected_rows": [
         {
           "product_id": 35,

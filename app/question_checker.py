@@ -1,5 +1,5 @@
 """
-Check wheter the user's question needs clarification. (Ambiguity detection)
+Check whether the user's question needs clarification. (Ambiguity detection)
 """
 
 from dotenv import load_dotenv
@@ -14,6 +14,7 @@ llm = ChatGroq(
     temperature=0,
 )
 
+
 def check_question(question):
     """
     Decide whether a question is clear enough to turn into SQL.
@@ -23,29 +24,25 @@ def check_question(question):
     - clarification: a question for the user when clarification is needed
     """
 
+    # General rules only. No hints written for specific test questions.
     prompt = f"""
-You help decide whether an ecommerce analytics question is ready for SQL.
+You decide whether an ecommerce analytics question is ready to be turned into SQL.
 
-A question is ambiguous when it does not specify an important metric,
-time period, comparison, or meaning. For example, "What are the best
-products?" is ambiguous because "best" could mean highest sales,
-highest profit, highest rating, or something else.
+Mark a question AMBIGUOUS only when two or more reasonable readings would give
+materially different answers, and the question does not say which one it means.
+For example, "popular" could mean most units sold, most revenue, or most reviews.
 
-If a question does not mention a time period, assume the user means all
-available data. Do not mark a question ambiguous only because it has no date range.
+Do NOT mark a question ambiguous just because:
+- it has no time period (assume all available data is wanted)
+- it can be read in slightly different ways that give the same or almost the same answer
 
-Only return AMBIGUOUS when the question cannot be answered reasonably
-without a user choice. Do not invent extra filters or distinctions.
+Do not invent extra filters or distinctions.
 
-Use these ecommerce defaults:
-- "How many customers are there?" means count all customer records.
-  Do not ask about unique, active, or time-period-specific customers.
-- "Successfully paid payments" means payments where payment_status is "paid".
-- "Delivered orders" means orders with a delivered status, unless the user
-  explicitly asks about shipment delivery dates.
+Reference notes about the data:
+- orders.status is one of: placed, shipped, delivered, cancelled.
+- payments.payment_status is one of: paid, failed, refunded.
 
 Return exactly one of these formats:
-
 
 CLEAR
 
@@ -58,6 +55,7 @@ User question:
     response = llm.invoke(prompt)
     decision = response.content.strip()
 
+    # If the LLM says AMBIGUOUS, return its clarification question
     if decision.upper().startswith("AMBIGUOUS:"):
         clarification = decision.split(":", 1)[1].strip()
 
@@ -66,6 +64,7 @@ User question:
             "clarification": clarification,
         }
 
+    # Otherwise treat the question as clear
     return {
         "is_clear": True,
         "clarification": "",
@@ -73,12 +72,14 @@ User question:
 
 
 if __name__ == "__main__":
+    # Quick sanity checks only. These will NOT be used in the real eval set.
     test_questions = [
-        "Which 5 products have the highest price?",
-        "What are the best products?",
-        "Which customers returned the most products?",
-        "How many customers are there?",
-        "How many payments have been successfully paid?",
+        "How many products are in the Laptops category?",   # expect clear
+        "What is the average rating given in reviews?",     # expect clear
+        "How many orders were cancelled?",                  # expect clear
+        "List the brands from Japan.",                      # expect clear
+        "Who are our top customers?",                       # expect ambiguous
+        "Which products are doing well?",                   # expect ambiguous
     ]
 
     for question in test_questions:
@@ -88,4 +89,4 @@ if __name__ == "__main__":
         print("Is clear:", result["is_clear"])
 
         if result["clarification"]:
-            print("clarification:", result["clarification"])
+            print("Clarification:", result["clarification"])
