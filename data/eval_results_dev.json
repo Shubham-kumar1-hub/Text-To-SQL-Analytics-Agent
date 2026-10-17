@@ -1,12 +1,12 @@
 {
-  "evaluated_at": "2026-10-17T16:30:52.634941+05:30",
+  "evaluated_at": "2026-10-17T17:02:10.594952+05:30",
   "split": "dev",
-  "passed_cases": 19,
+  "passed_cases": 20,
   "total_cases": 20,
-  "execution_accuracy_percent": 95.0,
+  "execution_accuracy_percent": 100.0,
   "by_tier": {
     "single_table": {
-      "passed": 3,
+      "passed": 4,
       "total": 4
     },
     "joins": {
@@ -55,7 +55,7 @@
       "question": "What is the average product price, rounded to 2 decimal places?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT ROUND(CAST(AVG(price) AS DECIMAL), 2) AS average_price FROM products",
+      "generated_sql": "SELECT ROUND(AVG(price), 2) AS average_price FROM products",
       "agent_answer": "The average product price is **13263.89**.",
       "expected_rows": [
         {
@@ -107,10 +107,10 @@
       "split": "dev",
       "tier": "single_table",
       "question": "How many payments were made by UPI?",
-      "is_correct": false,
-      "failure_reason": "result rows differ from reference",
-      "generated_sql": "SELECT COUNT(*) AS upi_payment_count FROM payments WHERE method = 'UPI'",
-      "agent_answer": "There were **0** payments made using UPI.",
+      "is_correct": true,
+      "failure_reason": "",
+      "generated_sql": "SELECT COUNT(*) AS upi_payments FROM payments WHERE method = 'upi'",
+      "agent_answer": "There were **395** payments made using UPI.",
       "expected_rows": [
         {
           "count": 395
@@ -118,7 +118,7 @@
       ],
       "actual_rows": [
         {
-          "upi_payment_count": 0
+          "upi_payments": 395
         }
       ],
       "attempts": 1
@@ -181,7 +181,7 @@
       "question": "List the names of the brands that make products in the Mobiles category.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT DISTINCT b.name FROM brands AS b JOIN products AS p ON p.brand_id = b.brand_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Mobiles' LIMIT 20",
+      "generated_sql": "SELECT DISTINCT b.name FROM brands AS b JOIN products AS p ON b.brand_id = p.brand_id JOIN categories AS c ON p.category_id = c.category_id WHERE c.name = 'Mobiles' LIMIT 20",
       "agent_answer": "The brands with products in the **Mobiles** category are:\n\n- Bolt  \n- Kite  \n- Terra  \n- Vivo  \n- Zenith",
       "expected_rows": [
         {
@@ -455,8 +455,8 @@
       "question": "How many payments are there for each payment method? Show the method and the count.",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT method, COUNT(*) AS payment_count FROM payments GROUP BY method ORDER BY payment_count DESC LIMIT 20",
-      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| cod         | 370 |\n| netbanking  | 369 |\n| card        | 366 |",
+      "generated_sql": "SELECT method, COUNT(*) AS payment_count FROM payments GROUP BY method LIMIT 20",
+      "agent_answer": "**Payments by method**\n\n| Method      | Count |\n|-------------|-------|\n| upi         | 395 |\n| card        | 366 |\n| cod         | 370 |\n| netbanking  | 369 |",
       "expected_rows": [
         {
           "method": "upi",
@@ -481,16 +481,16 @@
           "payment_count": 395
         },
         {
+          "method": "card",
+          "payment_count": 366
+        },
+        {
           "method": "cod",
           "payment_count": 370
         },
         {
           "method": "netbanking",
           "payment_count": 369
-        },
-        {
-          "method": "card",
-          "payment_count": 366
         }
       ],
       "attempts": 1
@@ -502,7 +502,7 @@
       "question": "How many orders were placed in March 2026?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders WHERE order_date >= '2026-03-01' AND order_date < '2026-04-01'",
+      "generated_sql": "SELECT COUNT(*) AS march_2026_orders FROM orders WHERE order_date >= CAST('2026-03-01' AS DATE) AND order_date < CAST('2026-04-01' AS DATE)",
       "agent_answer": "There were **115 orders** placed in March\u202f2026.",
       "expected_rows": [
         {
@@ -511,7 +511,7 @@
       ],
       "actual_rows": [
         {
-          "order_count": 115
+          "march_2026_orders": 115
         }
       ],
       "attempts": 1
@@ -544,7 +544,7 @@
       "question": "How many customers have never written a review?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT COUNT(*) AS customers_without_review FROM customers AS c WHERE NOT EXISTS(SELECT 1 FROM reviews AS r WHERE r.customer_id = c.customer_id)",
+      "generated_sql": "SELECT COUNT(*) AS customers_without_reviews FROM customers AS c LEFT JOIN reviews AS r ON c.customer_id = r.customer_id WHERE r.review_id IS NULL",
       "agent_answer": "19 customers have never written a review.",
       "expected_rows": [
         {
@@ -553,7 +553,7 @@
       ],
       "actual_rows": [
         {
-          "customers_without_review": 19
+          "customers_without_reviews": 19
         }
       ],
       "attempts": 1
@@ -600,7 +600,7 @@
       "is_correct": true,
       "failure_reason": "",
       "generated_sql": null,
-      "agent_answer": "What metric should be used to define \u201cmost valuable\u201d (e.g., total revenue, profit, number of orders, etc.)?",
+      "agent_answer": "What metric should be used to define \u201cmost valuable\u201d (e.g., total revenue, profit, purchase frequency, etc.)?",
       "expected_rows": [],
       "actual_rows": [],
       "attempts": 0
@@ -612,8 +612,8 @@
       "question": "Which loyalty tier has the most customers?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT loyalty_tier, COUNT(*) AS customer_count FROM customers GROUP BY loyalty_tier ORDER BY customer_count DESC LIMIT 1",
-      "agent_answer": "The loyalty tier with the most customers is **bronze**, with 145 customers.",
+      "generated_sql": "SELECT loyalty_tier FROM customers GROUP BY loyalty_tier ORDER BY COUNT(*) DESC LIMIT 1",
+      "agent_answer": "The **bronze** loyalty tier has the most customers.",
       "expected_rows": [
         {
           "loyalty_tier": "bronze"
@@ -621,8 +621,7 @@
       ],
       "actual_rows": [
         {
-          "loyalty_tier": "bronze",
-          "customer_count": 145
+          "loyalty_tier": "bronze"
         }
       ],
       "attempts": 1
@@ -634,8 +633,8 @@
       "question": "What is the most common payment method?",
       "is_correct": true,
       "failure_reason": "",
-      "generated_sql": "SELECT method, COUNT(*) AS payment_count FROM payments GROUP BY method ORDER BY payment_count DESC LIMIT 1",
-      "agent_answer": "The most common payment method is **UPI**, with 395 transactions.",
+      "generated_sql": "SELECT method FROM payments GROUP BY method ORDER BY COUNT(*) DESC LIMIT 1",
+      "agent_answer": "The most common payment method is **upi**.",
       "expected_rows": [
         {
           "method": "upi"
@@ -643,8 +642,7 @@
       ],
       "actual_rows": [
         {
-          "method": "upi",
-          "payment_count": 395
+          "method": "upi"
         }
       ],
       "attempts": 1

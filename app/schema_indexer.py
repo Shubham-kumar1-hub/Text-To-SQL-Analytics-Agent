@@ -10,6 +10,9 @@ from sqlalchemy import create_engine, text
 from app.embeddings import create_embedding
 from app.schema import get_schema_metadata
 
+# Text columns with this many distinct values or fewer get their values listed
+MAX_DISTINCT_VALUES = 10
+
 # Short business descriptions. It makes semantic retrieval more accurate.
 TABLE_PURPOSES = {
     "customers": "Customer account details, signup dates, and loyalty tiers.",
@@ -20,17 +23,10 @@ TABLE_PURPOSES = {
     "products": "Products for sale, including selling price, cost, brand, and category.",
     "inventory": "Current product stock quantities and reorder levels.",
     "coupons": "Discount coupon codes, percentages, and validity periods.",
-    "orders": (
-    "Customer purchase orders, order dates, delivery addresses, and statuses. "
-    "status uses lowercase values: placed, shipped, delivered, and cancelled."
-    ),
+    "orders": "Customer purchase orders, order dates, delivery addresses, and statuses.",
     "order_items": "Individual products, quantities, and prices inside each order.",
     "order_coupons": "Discount coupons applied to customer orders.",
-    "payments": (
-    "Order payment amounts, methods, paid dates, and payment statuses. "
-    "payment_status uses lowercase values: paid for successful payments, "
-    "failed, and refunded."
-    ),
+    "payments": "Order payment amounts, methods, paid dates, and payment statuses.",
     "shipments": "Order shipping carriers, shipment dates, delivery dates, and tracking numbers.",
     "reviews": "Customer product ratings, comments, and review dates.",
     "returns": "Customer product returns, return reasons, and refunded amounts.",
@@ -39,7 +35,26 @@ TABLE_PURPOSES = {
 
 load_dotenv()
 
-def build_table_description(table_name, details):
+
+def get_column_values(connection, table_name, column_name):
+    """ Returning a column's distinct values if there are only a few, otherwise None."""
+
+    # Fetching one more then the limit so we can tell if there are too many distinct values.
+    rows = connection.execute(
+        text(
+            f'SELECT DISTINCT "{column_name}" FROM "{table_name}" '
+            f'WHERE "{column_name}" IS NOT NULL '
+            f"ORDER BY 1 LIMIT {MAX_DISTINCT_VALUES + 1}"
+        )
+    ).fetchall()
+
+    # Too many different values means this is not a category style column
+    if len(rows) > MAX_DISTINCT_VALUES:
+        return None
+
+    return [row[0] for row in rows]
+
+def build_table_description(table_name, details, connection):
     """ Creating readable text that describes one database table"""
 
     lines = [
@@ -50,7 +65,17 @@ def build_table_description(table_name, details):
 
     # Adding every column name and type.
     for column in details["columns"]:
-        lines.append(f"- {column['name']} ({column['type']})")
+        line = f"- {column['name']} ({column['type']})"
+
+        # For text columns, list the allowed values when there are only a few
+        if column["type"].startswith(("VARCHAR", "TEXT")):
+            values = get_column_values(connection, table_name, column["name"])
+
+            if values:
+                value_text = ", ".join(f"'{value}'" for value in values)
+                line += f" allowed values: {value_text}"
+
+        lines.append(line)
 
     # Primary keys help the embedding describes the table identity.
     primary_key = ", ".join(details["primary_key"])
@@ -89,7 +114,7 @@ def index_schema():
 
     with engine.begin() as connection:
         for table_name, details in schema.items():
-            schema_text = build_table_description(table_name, details)
+            schema_text = build_table_description(table_name, details, connection)
 
             # Converting the table description into a 384-dimensional vetcor
             embedding = create_embedding(schema_text)
