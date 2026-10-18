@@ -2,7 +2,9 @@
 
 Ask ecommerce analytics questions in plain English. The agent writes the SQL, runs it safely against PostgreSQL, and explains the result in plain language. Ambiguous questions get a clarification request instead of a guess, and requests that try to change data never reach the database.
 
-**Live demo:** _add link here_ 
+**Live demo:** _add link here_ | **Demo video:** _add link here_
+
+_The demo runs on a free API tier. If a question returns an error, wait a minute and try again._
 
 ![App screenshot](docs/screenshot.png)
 
@@ -81,7 +83,7 @@ How to read these numbers honestly:
 - **No external benchmark yet.** Spider and BIRD runs are not included.
 - **Timeouts are retried.** A query that hits the 5-second timeout is retried once, which costs extra database time.
 - **The query role can still read the embeddings table.** The validator blocks it, but a second database role would enforce it at the database level.
-- **Free-tier rate limits.** Groq's free tier allows 8,000 tokens per minute, so heavy use returns errors.
+- **Shared rate limit on the live demo.** The demo uses a free Groq key limited to 8,000 tokens per minute, shared by all visitors. Each question uses a few thousand tokens, so simultaneous use can return an error. If that happens, wait about a minute and try again. There is no per-visitor request limit.
 - **Synthetic data only.** No real customer data, and no personal-data handling.
 
 ## Run it locally
